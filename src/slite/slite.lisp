@@ -2,7 +2,8 @@
   (:use :cl
    :alexandria)
   (:export #:test-result
-           #:run-all-fiveam-tests))
+           #:run-all-fiveam-tests
+           #:on-pass))
 (in-package :slite)
 
 (defvar *last-results* nil
@@ -117,3 +118,11 @@
            "PASS")
           (t
            "FAIL"))))))
+
+
+(defun on-pass (results &key shell)
+  (when (every #'test-result results)
+    (uiop:run-program (list "bash" "-c" shell)
+                      :output *standard-output*
+                      :error-output *error-output*))
+  results)

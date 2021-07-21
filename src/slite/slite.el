@@ -10,6 +10,8 @@
          ("Name" 30 t)
          ("Message" 20 nil)]))
 
+(defvar slite-success-shell-hook nil)
+
 (define-derived-mode slite-details-mode slime-mode
   "Test Results Details"
   "dfdfd"
@@ -47,6 +49,12 @@
     (tabulated-list-print)
     (display-buffer buffer)))
 
+(defun slite--all-tests-passed-p (results)
+  (every (lambda (x)
+           (equal "PASS"
+                  (car (plist-get x :data))))
+         results))
+
 (defun slite-run (cmd &optional buffer)
   (interactive
    (list (slime-read-from-minibuffer "Lisp expression for tests: "
@@ -58,6 +66,11 @@
   (message "Waiting for test results...")
   (slime-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
     (lambda (results)
+      (when (and slite-success-shell-hook
+                 (slite--all-tests-passed-p results))
+        (message "running hook: %s" slite-success-shell-hook)
+        (shell-command slite-success-shell-hook))
+
       (slite--show-test-results results buffer))))
 
 
@@ -127,6 +140,10 @@
   'slite-details-quit)
 
 (define-key lisp-mode-map (kbd "C-c v")
+  'slite-run)
+(define-key slite-results-mode-map (kbd "C-c v")
+  'slite-run)
+(define-key slime-mode-map (kbd "C-c v")
   'slite-run)
 
 ;; helpful while building slite, because I have to switch back and
