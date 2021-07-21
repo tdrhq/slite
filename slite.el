@@ -1,6 +1,6 @@
-(provide 'slite)
+;; -*- lexical-binding: t -*-
 
-(setq lexical-binding t)
+(provide 'slite)
 
 (define-derived-mode slite-results-mode tabulated-list-mode
   "CL Test Results"
@@ -54,6 +54,8 @@
            (equal "PASS"
                   (car (plist-get x :data))))
          results))
+
+(defvar slite-history nil)
 
 (defun slite-run (cmd &optional buffer)
   (interactive
