@@ -38,7 +38,7 @@
   (with-current-buffer buffer
     (slite-results-mode)
     (setq tabulated-list-entries
-          (loop for x in results
+          (cl-loop for x in results
                 collect
                 (let ((data (plist-get x :data))
                       (id (plist-get x :id)))
