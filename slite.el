@@ -34,7 +34,7 @@
    (t msg)))
 
 (defun slite--show-test-results (results buffer)
-  (message "Showing results")
+  (message "Showing results in buffer %s" buffer)
   (with-current-buffer buffer
     (slite-results-mode)
     (setq tabulated-list-entries
@@ -47,7 +47,9 @@
                               (cdr data)) ))))
     (tabulated-list-init-header)
     (tabulated-list-print)
-    (display-buffer buffer)))
+    (display-buffer buffer)
+    (unless (slite--all-tests-passed-p results)
+      (switch-to-buffer buffer))))
 
 (defun slite--all-tests-passed-p (results)
   (every (lambda (x)
@@ -68,6 +70,7 @@
   (message "Waiting for test results...")
   (slime-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
     (lambda (results)
+      (message "Got results: %s" results)
       (when (and slite-success-shell-hook
                  (slite--all-tests-passed-p results))
         (message "running hook: %s" slite-success-shell-hook)

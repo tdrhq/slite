@@ -13,4 +13,5 @@
 
 (defsystem :slite/tests
   :serial t
-  :depends-on (:slite))
+  :depends-on (:slite)
+  :components ((:file "test-slite")))
