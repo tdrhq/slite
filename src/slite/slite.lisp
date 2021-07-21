@@ -80,6 +80,7 @@
                :package (package-name (test-case-package test-case))
                :details
                (get-test-case-details test-case)
+               :test-name (string (test-name test-case))
                :results
                (mapcar #'serialize-result results))
               :data
@@ -105,3 +106,14 @@
   (loop for suite in (cons nil (sort (copy-list fiveam::*toplevel-suites*) #'string<=))
         for results = (if (fiveam::suite-emptyp suite) nil (fiveam::run suite))
         appending results))
+
+(defun rerun-in-debugger (name package)
+  (let ((sym (find-symbol name package)))
+    (let ((fiveam:*on-error* :debug)
+          (fiveam:*on-failure* :debug))
+      (let ((result (fiveam:run sym)))
+        (cond
+          ((every #'test-result result)
+           "PASS")
+          (t
+           "FAIL"))))))

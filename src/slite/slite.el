@@ -66,8 +66,7 @@
   (message "Jump to definition not supported yet"))
 
 
-(defun slite--show-details (details)
-)
+(make-local-variable 'slite--current-id)
 
 (defun slite-describe-result ()
   (interactive)
@@ -94,7 +93,7 @@
 
           (unless (plist-get result :success)
             (insert (plist-get result :reason))))
-
+        (setq slite--current-id id)
         (setq slime-buffer-package package)
         (slite-details-mode)
         (switch-to-buffer-other-window buffer)))))
@@ -103,9 +102,25 @@
   (interactive)
   (quit-window t))
 
+(defun slite--current-id ()
+  (or (tabulated-list-get-id)
+      slite--current-id))
+
+(defun slite-rerun-in-debugger ()
+  (interactive)
+  (let* ((id (slite--current-id))
+         (name (plist-get id :test-name))
+         (package (plist-get id :package)))
+    (slime-eval-async `(slite::rerun-in-debugger ,name ,package)
+      (lambda (x)
+        (message "Result of running %s: %s" name x)))))
+
 (define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-definition)
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)
+
+(define-key slite-results-mode-map (kbd "r") 'slite-rerun-in-debugger)
+(define-key slite-details-mode-map (kbd "r") 'slite-rerun-in-debugger)
 
 
 (define-key slite-details-mode-map (kbd "q")
