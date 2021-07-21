@@ -49,6 +49,15 @@
 (defmethod test-case ((result fiveam::test-result))
   (fiveam::test-case result))
 
+(defun serialize-result (result)
+  (list
+   :expression (test-expression result)
+   :success (test-result result)
+   :reason (test-message result)))
+
+(defmethod test-case-package ((test-case fiveam::test-case))
+  (symbol-package (test-name test-case)))
+
 (defmethod process-results (results)
   (setf *last-results* results)
   (let ((test-case-map nil))
@@ -68,8 +77,11 @@
               (list
                :oid
                (get-object-id test-case)
+               :package (package-name (test-case-package test-case))
                :details
-               (get-test-case-details test-case))
+               (get-test-case-details test-case)
+               :results
+               (mapcar #'serialize-result results))
               :data
               (list (if (test-case-success-p results)
                         "PASS" "FAIL")
@@ -83,15 +95,10 @@
                         if (eql (test-case res) test-case)
                           collect res)))
     (assert test-case)
-    (format nil "Test Detail: ~%~a in package ~a (~d checks): ~%~a"
+    (format nil "Test Detail: ~%~a in package ~a (~d checks): ~%"
             (test-name test-case)
             (package-name (symbol-package (test-name test-case)))
-            (length results)
-            (str:join #\Newline
-                      (loop for result in (stable-sort results #'string<
-                                                       :key #'test-result)
-                            collect
-                            (format nil "~s" result))))))
+            (length results))))
 
 ;; modified from fiveam:run-all-tests
 (defmethod run-all-fiveam-tests ()

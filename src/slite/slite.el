@@ -10,19 +10,25 @@
          ("Name" 30 t)
          ("Message" 20 nil)]))
 
-(define-derived-mode slite-details-mode fundamental-mode
+(define-derived-mode slite-details-mode slime-mode
   "Test Results Details"
   "dfdfd"
   (read-only-mode))
 
+(defun slite--pass ()
+  #("PASS" 0 4 (face  `(:foreground "green"))))
+
+(defun slite--fail ()
+  #("FAIL" 0 4 (face `(:background  "red"
+                                    :foreground  "white"
+                                    :weight bold))))
+
 (defun slite--format-pass-fail (msg)
   (cond
    ((equal msg "PASS")
-    #("PASS" 0 4 (face  `(:foreground "green"))))
+    (slite--pass))
    ((equal msg "FAIL")
-    #("FAIL" 0 4 (face `(:background  "red"
-                                      :foreground  "white"
-                                      :weight bold))))
+    (slite--fail))
    (t msg)))
 
 (defun slite--show-test-results (results buffer)
@@ -34,7 +40,6 @@
                 collect
                 (let ((data (plist-get x :data))
                       (id (plist-get x :id)))
-                  (message "got id as %s" id)
                  (list id
                        (apply 'vector  (slite--format-pass-fail (car data))
                               (cdr data)) ))))
@@ -68,11 +73,29 @@
   (interactive)
   (let ((buffer (generate-new-buffer "*Test Case Details*")))
 
-    (let ((id (tabulated-list-get-id)))
+    (let* ((id (tabulated-list-get-id))
+           (results (plist-get id :results))
+           (package (plist-get id :package)))
       (with-current-buffer buffer
         (insert (plist-get
                  id
                  :details))
+
+        ;; now we add each of the test results
+        (dolist (result results)
+          (cond
+           ((plist-get result :success)
+            (insert (slite--pass)))
+           (t
+            (insert (slite--fail))))
+          (insert " ")
+          (insert (plist-get result :expression))
+          (insert "\n\n")
+
+          (unless (plist-get result :success)
+            (insert (plist-get result :reason))))
+
+        (setq slime-buffer-package package)
         (slite-details-mode)
         (switch-to-buffer-other-window buffer)))))
 
@@ -89,4 +112,9 @@
   'slite-details-quit)
 
 (define-key lisp-mode-map (kbd "C-c v")
+  'slite-run)
+
+;; helpful while building slite, because I have to switch back and
+;; forth between Lisp and elisp
+(define-key emacs-lisp-mode-map (kbd "C-c v")
   'slite-run)
