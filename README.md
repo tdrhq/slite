@@ -16,7 +16,7 @@ break, APIs will change, but your feedback will be very valuable.
 ## Installation
 
 I'll expand on this later. Basically you need to `(asdf:load-system
-:slite)`, and also need to load `slime.el` into emacs. That should be
+:slite)`, and also need to load `slite.el` into emacs. That should be
 all you need to do.
 
 ## Run all you FiveAM tests
