@@ -10,6 +10,9 @@ tests with debugger all from inside Emacs.
 
 Slite allows for fast Test Driven Development with CL.
 
+At the moment, treat this software as Alpha quality. Things will
+break, APIs will change, but your feedback will be very valuable.
+
 ## Installation
 
 I'll expand on this later. Basically you need to `(asdf:load-system
