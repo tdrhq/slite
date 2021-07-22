@@ -219,7 +219,12 @@
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
 
-(define-key slime-mode-map (kbd "C-c v")
+(define-key (case (slite--slime-impl)
+              (:slime
+               slime-mode-map)
+              (:sly
+               sly-mode-map))
+  (kbd "C-c v")
   'slite-run)
 
 (define-key sly-mode-map (kbd "C-c v")
