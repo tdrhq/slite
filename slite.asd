@@ -1,3 +1,5 @@
+(in-package :asdf-user)
+
 (defsystem :slite
   :serial t
   :author "Arnold Noronha <arnold@jipr.io>"
