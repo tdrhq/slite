@@ -8,6 +8,8 @@ Common Lisp tests (currently only FiveAM supported). It allows you to
 see the summary of test failures, jump to test definitions, rerun
 tests with debugger all from inside Emacs.
 
+We support both SLIME and SLY.
+
 Slite allows for fast Test Driven Development with CL.
 
 At the moment, treat this software as Alpha quality. Things will
