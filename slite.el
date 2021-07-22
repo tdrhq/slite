@@ -43,7 +43,8 @@
     (dolist (test-result results)
       (let ((reason (plist-get test-result :reason)))
         (unless (plist-get test-result :success)
-          (return (slite--remove-newlines reason)))))))
+          (return (slite--remove-newlines reason))))))
+  "")
 
 (defun slite--show-test-results (results buffer)
   (message "Showing results in buffer %s" buffer)
