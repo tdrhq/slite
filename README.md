@@ -52,9 +52,9 @@ the lisp expression that you pass to slite-run, or you could use the
 `slite-success-shell-hook` from the Emacs side. The latter option will
 work even when you're using a remote slime session.
 
-For e.g. `(setq slite-success-shell-hook "cd ~/code && git commit -a
--m ...")` will do essentially what I was suggesting earlier. This API
-is a little awkward, so we might change this in the future
+For example, `(setq slite-success-shell-hook "cd ~/code && git commit
+-a -m ...")` will do essentially what I was suggesting earlier. This
+API is a little awkward, so we might change this in the future
 
 # Authors
 
