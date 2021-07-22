@@ -29,4 +29,4 @@
 
 (test demo-test
   (is (eql 3 (+  1 2)))
-  (is (eql 4 (+ 2 2))))
+  (is (eql 2 (+ 2 2))))

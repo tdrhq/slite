@@ -13,10 +13,24 @@
 
 (defvar slite-success-shell-hook nil)
 
-(define-derived-mode slite-details-mode slime-mode
+(define-derived-mode slite-details-mode fundamental-mode
   "Test Results Details"
   "dfdfd"
   (read-only-mode))
+
+(defvar slite-slime-impl nil
+  "either :slime or :sly. Keep as nil to auto-detect.")
+
+(defun slite--slime-impl ()
+  (cond
+   (slite-slime-impl
+    slite-slime-impl)
+   ((functionp 'sly)
+    :sly)
+   ((functionp 'slime)
+    :slime)
+   (t
+    (error "Neither SLIME or SLY could be autodetected"))))
 
 (defun slite--pass ()
   #("PASS" 0 4 (face  `(:foreground "green"))))
@@ -77,7 +91,11 @@
 (defvar slite-history nil)
 
 (defun slite--sl*-read-from-minibuffer (&rest args)
-  (apply 'slime-read-from-minibuffer args))
+  (apply
+   (ecase (slite--slime-impl)
+     (:slime 'slime-read-from-minibuffer)
+     (:sly 'sly-read-from-minibuffer))
+   args))
 
 (defun slite-run (cmd &optional buffer)
   (interactive
@@ -97,11 +115,6 @@
         (shell-command slite-success-shell-hook))
 
       (slite--show-test-results results buffer))))
-
-
-(defun slite-jump-to-definition ()
-  (interactive)
-  (message "Jump to definition not supported yet"))
 
 
 (make-local-variable 'slite--current-id)
@@ -132,12 +145,24 @@
           (unless (plist-get result :success)
             (insert (plist-get result :reason))))
         (setq slite--current-id id)
-        (slite--set-buffer-package package)
         (slite-details-mode)
+        (slite--sl*-mode)
+        (slite--set-buffer-package package)
         (switch-to-buffer-other-window buffer)))))
 
 (defun slite--set-buffer-package (package)
-  (setq slime-buffer-package package))
+  (ecase (slite--slime-impl)
+    (:slime
+     (setq slime-buffer-package package))
+    (:sly
+     (setq sly-buffer-package package))))
+
+(defun slite--sl*-mode ()
+  (ecase (slite--slime-impl)
+    (:slime
+     (slime-mode))
+    (:sly
+     (sly-mode))))
 
 (defun slite-details-quit ()
   (interactive)
@@ -148,10 +173,18 @@
       slite--current-id))
 
 (defun slite--sl*-eval-async (expn callback)
-  (slime-eval-async expn callback))
+  (ecase (slite--slime-impl)
+    (:slime
+     (slime-eval-async expn callback))
+    (:sly
+     (sly-eval-async expn callback))))
 
 (defun slite--sl*-compile-defun ()
-  (slime-compile-defun))
+  (ecase (slite--slime-impl)
+    (:slime
+     (slime-compile-defun))
+    (:sly
+     (sly-compile-defun))))
 
 
 (defun slite-rerun-in-debugger ()
@@ -168,7 +201,7 @@
   (slite--sl*-compile-defun)
   (call-interactively 'slite-run))
 
-(define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-definition)
+
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)
 
@@ -185,7 +218,11 @@
   'slite-compile-defun-and-run-tests)
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
+
 (define-key slime-mode-map (kbd "C-c v")
+  'slite-run)
+
+(define-key sly-mode-map (kbd "C-c v")
   'slite-run)
 
 ;; helpful while building slite, because I have to switch back and
