@@ -150,6 +150,11 @@
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
+(defun slite-compile-defun-and-run-tests ()
+  (interactive)
+  (slime-compile-defun)
+  (call-interactively 'slite-run))
+
 (define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-definition)
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)
@@ -163,6 +168,8 @@
 
 (define-key lisp-mode-map (kbd "C-c v")
   'slite-run)
+(define-key lisp-mode-map (kbd "C-c t")
+  'slite-compile-defun-and-run-tests)
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
 (define-key slime-mode-map (kbd "C-c v")
