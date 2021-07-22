@@ -23,7 +23,8 @@ all you need to do.
 
 This is the function you'll call most often. In a Common Lisp buffer,
 press `C-c v` or `M-x slite-run`. You can then provide the expression
-as `(slite:run-all-fiveam-tests)`.
+as `(slite:run-all-fiveam-tests)`. You could run a specific test suite
+with `(fiveam:run test-suite-name)`.
 
 You'll get a table of all the tests and their results. The failed
 tests will be on the top.
