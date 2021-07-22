@@ -11,27 +11,6 @@
   rendering so that we can run actions on this, and the test results
   aren't garbage collected in the meantime")
 
-(defvar *object-to-id* (trivial-garbage:make-weak-hash-table :weakness :key))
-(defvar *id-to-obj* (trivial-garbage:make-weak-hash-table :weakness :value :test 'equal))
-
-(defvar *lock* (bt:make-lock))
-
-(defun get-object-id (obj)
-  "Don't use yet. Broken."
-  (bt:with-lock-held (*lock*)
-    (or
-     (gethash obj *object-to-id*)
-     (let ((oid (mongoid:oid-str (mongoid:oid))))
-       (setf (Gethash obj *object-to-id*) oid)
-       (setf (gethash oid *id-to-obj*)  obj)
-       oid))))
-
-(defun id-to-object (id)
-  (let ((obj (gethash id *id-to-obj*)))
-    (unless obj
-      (error "No such object exists"))
-    obj))
-
 (defmethod test-result ((result fiveam::test-passed))
   t)
 
@@ -76,8 +55,6 @@
              (list
               :id
               (list
-               :oid
-               (get-object-id test-case)
                :package (package-name (test-case-package test-case))
                :details
                (get-test-case-details test-case)

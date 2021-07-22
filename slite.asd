@@ -5,10 +5,7 @@
   :version "0.0.1"
   :description "SLIME based Test-runner for FiveAM tests (and possibly others in the future)"
   :depends-on (:str
-               :fiveam
-               :bordeaux-threads
-               :cl-mongo-id
-               :trivial-garbage)
+               :fiveam)
   :components ((:file "slite")))
 
 (defsystem :slite/tests
