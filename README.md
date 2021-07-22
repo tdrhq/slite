@@ -1,6 +1,8 @@
 
 # SLITE
 
+![Screenshot of Slite in Action](https://tdrhq.com/slite-screenshot.png)
+
 Slite stands for SLIme TEst runner. Slite interactively runs your
 Common Lisp tests (currently only FiveAM supported). It allows you to
 see the summary of test failures, jump to test definitions, rerun

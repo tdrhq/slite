@@ -26,3 +26,7 @@
       (let ((first (car res)))
         (is (equal "FOOBAR" (getf (getf first :id) :test-name))))))
   (pass))
+
+(test demo-test
+  (is (eql 3 (+  1 2)))
+  (is (eql 4 (+ 2 2))))
