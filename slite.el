@@ -48,7 +48,7 @@
    ""))
 
 (defun slite--show-test-results (results buffer)
-  (message "Showing results in buffer %s" buffer)
+  (message "Got test results" )
   (with-current-buffer buffer
     (slite-results-mode)
     (setq tabulated-list-entries
@@ -168,7 +168,7 @@
 
 (define-key lisp-mode-map (kbd "C-c v")
   'slite-run)
-(define-key lisp-mode-map (kbd "C-c t")
+(define-key lisp-mode-map (kbd "C-c j")
   'slite-compile-defun-and-run-tests)
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
