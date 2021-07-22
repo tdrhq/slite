@@ -8,7 +8,8 @@
   (setq tabulated-list-format
         [("Result" 5 t)
          ("Name" 30 t)
-         ("Message" 20 nil)]))
+         ("Passed" 10 nil)
+         ("Reason" 35 nil)]))
 
 (defvar slite-success-shell-hook nil)
 
@@ -33,6 +34,17 @@
     (slite--fail))
    (t msg)))
 
+(defun slite--remove-newlines (s)
+  (replace-regexp-in-string "\n" "" s ))
+
+
+(defun slite--parse-reason (id)
+  (let ((results (plist-get id :results)))
+    (dolist (test-result results)
+      (let ((reason (plist-get test-result :reason)))
+        (unless (plist-get test-result :success)
+          (return (slite--remove-newlines reason)))))))
+
 (defun slite--show-test-results (results buffer)
   (message "Showing results in buffer %s" buffer)
   (with-current-buffer buffer
@@ -44,7 +56,10 @@
                       (id (plist-get x :id)))
                  (list id
                        (apply 'vector  (slite--format-pass-fail (car data))
-                              (cdr data)) ))))
+                              (append
+                               (cdr data)
+                               (list
+                                (slite--parse-reason id)))) ))))
     (tabulated-list-init-header)
     (tabulated-list-print)
     (display-buffer buffer)
