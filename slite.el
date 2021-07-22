@@ -44,7 +44,7 @@
      (dolist (test-result results)
        (let ((reason (plist-get test-result :reason)))
          (unless (plist-get test-result :success)
-           (return (slite--remove-newlines reason))))))
+           (cl-return (slite--remove-newlines reason))))))
    ""))
 
 (defun slite--show-test-results (results buffer)
@@ -76,16 +76,19 @@
 
 (defvar slite-history nil)
 
+(defun slite--sl*-read-from-minibuffer (&rest args)
+  (apply 'slime-read-from-minibuffer args))
+
 (defun slite-run (cmd &optional buffer)
   (interactive
-   (list (slime-read-from-minibuffer "Lisp expression for tests: "
-                                     (car slite-history)
-                                     'slite-history)))
+   (list (slite--sl*-read-from-minibuffer "Lisp expression for tests: "
+                                          (car slite-history)
+                                          'slite-history)))
 
   (unless (bufferp buffer)
     (setq buffer (get-buffer-create "*Test Results*")))
   (message "Waiting for test results...")
-  (slime-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
+  (slite--sl*-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
     (lambda (results)
       (message "Got results: %s" results)
       (when (and slite-success-shell-hook
@@ -129,9 +132,12 @@
           (unless (plist-get result :success)
             (insert (plist-get result :reason))))
         (setq slite--current-id id)
-        (setq slime-buffer-package package)
+        (slite--set-buffer-package package)
         (slite-details-mode)
         (switch-to-buffer-other-window buffer)))))
+
+(defun slite--set-buffer-package (package)
+  (setq slime-buffer-package package))
 
 (defun slite-details-quit ()
   (interactive)
@@ -141,18 +147,25 @@
   (or (tabulated-list-get-id)
       slite--current-id))
 
+(defun slite--sl*-eval-async (expn callback)
+  (slime-eval-async expn callback))
+
+(defun slite--sl*-compile-defun ()
+  (slime-compile-defun))
+
+
 (defun slite-rerun-in-debugger ()
   (interactive)
   (let* ((id (slite--current-id))
          (name (plist-get id :test-name))
          (package (plist-get id :package)))
-    (slime-eval-async `(slite::rerun-in-debugger ,name ,package)
+    (slite--sl*-eval-async `(slite::rerun-in-debugger ,name ,package)
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
 (defun slite-compile-defun-and-run-tests ()
   (interactive)
-  (slime-compile-defun)
+  (slite--sl*-compile-defun)
   (call-interactively 'slite-run))
 
 (define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-definition)
