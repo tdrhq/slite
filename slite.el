@@ -33,12 +33,12 @@
     (error "Neither SLIME or SLY could be autodetected"))))
 
 (defun slite--pass ()
-  #("PASS" 0 4 (face  `(:foreground "green"))))
+  #("PASS" 0 4 (face  (:foreground "green"))))
 
 (defun slite--fail ()
-  #("FAIL" 0 4 (face `(:background  "red"
-                                    :foreground  "white"
-                                    :weight bold))))
+  #("FAIL" 0 4 (face (:background  "red"
+                                   :foreground  "white"
+                                   :weight bold))))
 
 (defun slite--format-pass-fail (msg)
   (cond
@@ -62,7 +62,7 @@
    ""))
 
 (defun slite--show-test-results (results buffer)
-  (message "Got test results" )
+  (message "Got test results")
   (with-current-buffer buffer
     (slite-results-mode)
     (setq tabulated-list-entries
@@ -108,7 +108,6 @@
   (message "Waiting for test results...")
   (slite--sl*-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
     (lambda (results)
-      (message "Got results: %s" results)
       (when (and slite-success-shell-hook
                  (slite--all-tests-passed-p results))
         (message "running hook: %s" slite-success-shell-hook)
