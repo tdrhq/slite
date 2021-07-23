@@ -21,7 +21,10 @@
   (fiveam::name test-case))
 
 (defmethod test-expression ((result fiveam::test-result))
-  (format nil "~s" (fiveam::test-expr result)))
+  ;; To keep the expression concise, let's switch to the package
+  ;; before rendering it to a string
+  (let ((*package* (test-case-package (test-case result))))
+   (format nil "~s" (fiveam::test-expr result))))
 
 (defmethod test-message ((result fiveam::test-result))
   (fiveam::reason result))
