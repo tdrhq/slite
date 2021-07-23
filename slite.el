@@ -218,15 +218,16 @@
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
 
-(define-key (case (slite--slime-impl)
-              (:slime
-               slime-mode-map)
-              (:sly
-               sly-mode-map))
-  (kbd "C-c v")
-  'slite-run)
 
-(define-key sly-mode-map (kbd "C-c v")
+(defun slite--slime-mode-map ()
+  (case (slite--slime-impl)
+    (:slime
+     slime-mode-map)
+    (:sly
+     sly-mode-map)))
+
+(define-key (slite--slime-mode-map)
+  (kbd "C-c v")
   'slite-run)
 
 ;; helpful while building slite, because I have to switch back and
