@@ -186,6 +186,7 @@
     (:sly
      (sly-compile-defun))))
 
+(setq debug-on-error t)
 
 (defun slite-rerun-in-debugger ()
   (interactive)
