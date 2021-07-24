@@ -201,10 +201,16 @@
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
-(defun slite-compile-defun-and-run-tests ()
-  (interactive)
-  (slite--sl*-compile-defun)
-  (call-interactively 'slite-run))
+(let ((last-command nil))
+  (defun slite-compile-defun-and-run-tests ()
+    (interactive)
+    (slite--sl*-compile-defun))
+
+  (defun slite--compilation-finished (successp notes buffer loadp)
+    (when last-command
+      (setq last-command nil))
+    (when successp
+     (call-interactively 'slite-run))))
 
 
 (define-key slite-results-mode-map (kbd "RET")
@@ -224,6 +230,13 @@
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
 
+
+(add-hook (case (slite--slime-impl)
+            (:sly
+             'sly-compilation-finished-hook)
+            (:slime
+             'slime-compilation-finished-hook))
+          'slite--compilation-finished)
 
 (defun slite--slime-mode-map ()
   (case (slite--slime-impl)
