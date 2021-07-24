@@ -81,8 +81,10 @@
     (tabulated-list-init-header)
     (tabulated-list-print)
     (display-buffer buffer)
-    (unless (slite--all-tests-passed-p results)
-      (switch-to-buffer buffer))))
+    ;;;; I don't think this is the right behavior:
+    ;; (unless (slite--all-tests-passed-p results)
+    ;;   (switch-to-buffer buffer))
+    ))
 
 (defun slite--all-tests-passed-p (results)
   (every (lambda (x)
