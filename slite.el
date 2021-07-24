@@ -119,7 +119,7 @@
 
 (defun slite--on-success ()
   (when slite-success-shell-hook
-    (save-some-buffers nil compilation-save-buffers-predicate)
+    (save-some-buffers t compilation-save-buffers-predicate)
     (message "running hook: %s" slite-success-shell-hook)
     (shell-command slite-success-shell-hook)))
 
