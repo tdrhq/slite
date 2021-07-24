@@ -13,6 +13,8 @@
 
 (defvar slite-success-shell-hook nil)
 
+(defvar slite-success-hook 'slite--on-success)
+
 (define-derived-mode slite-details-mode fundamental-mode
   "Test Results Details"
   "dfdfd"
@@ -108,13 +110,18 @@
   (message "Waiting for test results...")
   (slite--sl*-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
     (lambda (results)
-      (when (and slite-success-shell-hook
-                 (slite--all-tests-passed-p results))
-        (message "running hook: %s" slite-success-shell-hook)
-        (shell-command slite-success-shell-hook))
+      (when (and
+             slite-success-hook
+             (slite--all-tests-passed-p results))
+        (funcall slite-success-hook))
 
       (slite--show-test-results results buffer))))
 
+(defun slite--on-success ()
+  (when slite-success-shell-hook
+    (save-some-buffers nil compilation-save-buffers-predicate)
+    (message "running hook: %s" slite-success-shell-hook)
+    (shell-command slite-success-shell-hook)))
 
 (make-local-variable 'slite--current-id)
 
