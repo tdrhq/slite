@@ -50,8 +50,11 @@
     (slite--fail))
    (t msg)))
 
-(defun slite--remove-newlines (s)
-  (replace-regexp-in-string "\n" "" s ))
+(defun slite--format-one-line-reason (s)
+  (replace-regexp-in-string
+   ;; This is common enough and takes up too much screen real estate
+   "^Unexpected Error: " ""
+   (replace-regexp-in-string "\n" "" s )))
 
 
 (defun slite--parse-reason (id)
@@ -60,7 +63,7 @@
      (dolist (test-result results)
        (let ((reason (plist-get test-result :reason)))
          (unless (plist-get test-result :success)
-           (cl-return (slite--remove-newlines reason))))))
+           (cl-return (slite--format-one-line-reason reason))))))
    ""))
 
 (defun slite--show-test-results (results buffer)
