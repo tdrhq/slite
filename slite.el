@@ -218,6 +218,15 @@
     (setq slite--last-command-p nil)
     (call-interactively 'slite-run)))
 
+(defun slite-delete-test ()
+  (interactive)
+  (let* ((id (slite--current-id))
+         (name (plist-get id :test-name))
+         (package (plist-get id :package)))
+   (slite--sl*-eval-async
+    `(slite::rem-test ,name ,package)
+    (lambda (x) (message "Test deleted")))))
+
 
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)

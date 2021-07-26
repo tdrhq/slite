@@ -92,6 +92,21 @@
         for results = (if (fiveam::suite-emptyp suite) nil (fiveam::run suite))
         appending results))
 
+(defun rem-test (name package)
+  (cond
+    (package
+     (fiveam:rem-test (find-symbol name package)))
+    (t
+     ;; We're most likely looking at an uninterned symbol, like #:foo
+     ;; Our best bet is to walk through all the tests and remove all
+     ;; tests with the same name but uninterned package.
+     (loop for existing being the hash-keys of fiveam::*test*
+           if (and
+               (string= name existing)
+               (not (symbol-package existing)))
+             do
+             (fiveam:rem-test existing)))))
+
 (defun rerun-in-debugger (name package)
   (let ((sym (find-symbol name package)))
     (let ((fiveam:*on-error* :debug)
