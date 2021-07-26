@@ -58,7 +58,9 @@
              (list
               :id
               (list
-               :package (package-name (test-case-package test-case))
+               :package (let ((package (test-case-package test-case)))
+                          (when package
+                           (package-name package)))
                :details
                (get-test-case-details test-case)
                :test-name (string (test-name test-case))
@@ -79,7 +81,9 @@
     (assert test-case)
     (format nil "Test Detail: ~%~a in package ~a (~d checks): ~%"
             (test-name test-case)
-            (package-name (symbol-package (test-name test-case)))
+            (let ((package (symbol-package (test-name test-case))))
+              (when package
+               (package-name package)))
             (length results))))
 
 ;; modified from fiveam:run-all-tests
