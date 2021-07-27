@@ -1,5 +1,6 @@
 (load #P "quicklisp.lisp")
 
+(setf quicklisp-quickstart:*home* #P"./")
 (quicklisp-quickstart:install)
 
 (push #P "./" asdf:*central-registry*)
