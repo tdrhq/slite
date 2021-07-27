@@ -1,4 +1,4 @@
-(load "~/quicklisp/setup.lisp")
+(load #P"~/quicklisp/setup.lisp")
 
 (ql:update-all-dists)
 

@@ -18,7 +18,7 @@ pipeline {
             }
 
             steps {
-                sh "echo $USER"
+                sh "env"
                 sh "pwd"
                 sh 'sbcl --script jenkins.lisp'
             }
