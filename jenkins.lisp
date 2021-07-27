@@ -1,6 +1,6 @@
 (load #P "quicklisp.lisp")
 
-(setf quicklisp-quickstart::*home* #P"/tmp")
+(setf quicklisp-quickstart::*home* #P"/tmp/")
 
 (quicklisp-quickstart:install)
 
