@@ -20,6 +20,7 @@ pipeline {
             steps {
                 sh "env"
                 sh "pwd"
+                sh "ls -l"
                 sh "cp /quicklisp.lisp quicklisp.lisp"
                 sh 'sbcl --script jenkins.lisp'
             }
