@@ -1,5 +1,7 @@
 (load "~/quicklisp/setup.lisp")
 
+(ql:update-all-dists)
+
 (push #P "./" asdf:*central-registry*)
 
 (ql:quickload :slite/tests)
