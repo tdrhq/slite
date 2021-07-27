@@ -1,6 +1,6 @@
-(load #P"~/quicklisp/setup.lisp")
+(load #P "/quicklisp.lisp")
 
-(ql:update-all-dists)
+(quicklisp-quickstart:install)
 
 (push #P "./" asdf:*central-registry*)
 
