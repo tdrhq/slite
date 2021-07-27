@@ -18,6 +18,8 @@ pipeline {
             }
 
             steps {
+                sh "ls /root"
+                sh "ls /root/quicklisp"
                 sh 'sbcl --script jenkins.lisp'
             }
         }
