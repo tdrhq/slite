@@ -1,8 +1,4 @@
 pipeline {
-    agent {
-        dockerfile true
-    }
-
     stages {
         stage ("checkout") {
             steps {
@@ -15,6 +11,10 @@ pipeline {
         }
 
         stage("Run tests") {
+            agent {
+                dockerfile true
+            }
+
             steps {
                 sh 'sbcl --script jenkins.lisp'
             }
