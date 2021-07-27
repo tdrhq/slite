@@ -1,4 +1,4 @@
-(load #P "/quicklisp.lisp")
+(load #P "quicklisp.lisp")
 
 (quicklisp-quickstart:install)
 
