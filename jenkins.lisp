@@ -17,6 +17,8 @@
                             "master")
 (deadbeef:register-external "https://github.com/edicl/cl-ppcre"
                             "master")
+(deadbeef:register-external "https://gitlab.common-lisp.net/alexandria/alexandria.git"
+                            "master")
 
 (deadbeef:prepare-externals "build/deadbeef/")
 
