@@ -14,7 +14,9 @@ pipeline {
 
         stage("Run tests") {
             agent {
-                dockerfile true
+                docker {
+                    image "fukamachi/roswell:20.01.14.104-alpine"
+                }
             }
 
             steps {
