@@ -1,4 +1,4 @@
-[![Build Status](http://jenkins.tdrhq.com/buildStatus/icon?job=slite)](http://jenkins.tdrhq.com/job/slite/)
+[![tdrhq](https://circleci.com/gh/tdrhq/slite.svg?style=svg)](https://app.circleci.com/pipelines/github/tdrhq/slite?branch=main)
 
 # SLITE
 
