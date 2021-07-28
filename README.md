@@ -1,3 +1,4 @@
+[![Build Status](http://jenkins.tdrhq.com/buildStatus/icon?job=slite)](http://jenkins.tdrhq.com/job/slite/)
 
 # SLITE
 
