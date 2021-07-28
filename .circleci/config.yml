@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Install SBCL
-          command: apt-get update && apt-get install -y sbcl
+          command: sudo apt-get update && sudo apt-get install -y sbcl
       - run:
           name: Install quicklisp
           command: curl -O https://beta.quicklisp.org/quicklisp.lisp
