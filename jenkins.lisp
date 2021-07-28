@@ -21,6 +21,9 @@
                             "master")
 (deadbeef:register-external "https://github.com/edicl/flexi-streams"
                             "master")
+(deadbeef:register-external "https://github.com/trivial-gray-streams/trivial-gray-streams"
+                            "master")
+
 (deadbeef:register-external "https://gitlab.common-lisp.net/alexandria/alexandria.git"
                             "master")
 
