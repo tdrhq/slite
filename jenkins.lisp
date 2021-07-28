@@ -1,5 +1,7 @@
 (require "asdf")
 
+(defvar *cwd* (uiop:getcwd))
+
 (asdf:initialize-output-translations `(:output-translations
                                        :inherit-configuration
                                        (,(namestring *cwd*)
