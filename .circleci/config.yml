@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cimg/base:2021.04
+    steps:
+      - checkout
+      - run:
+          name: Install SBCL
+          command: apt-get update && apt-get install -y sbcl
+      - run:
+          name: Install quicklisp
+          command: curl -O https://beta.quicklisp.org/quicklisp.lisp
