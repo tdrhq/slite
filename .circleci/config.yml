@@ -15,4 +15,4 @@ jobs:
             sbcl --load quicklisp.lisp --eval '(quicklisp-quickstart:install)'
       - run:
           name: Run tests
-          command: sbcl --script jenkins.lisp
+          command: sbcl --script run-circleci.lisp
