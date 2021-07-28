@@ -2,6 +2,8 @@
 
 (push #P"third-party/deadbeef/" asdf:*central-registry*)
 
+(asdf:load-system :deadbeef)
+
 (deadbeef:register-external "https://github.com/vindarel/cl-str.git"
                             "master")
 (deadbeef:register-external "https://github.com/sionescu/fiveam.git"
