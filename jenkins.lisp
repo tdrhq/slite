@@ -23,7 +23,10 @@
                             "master")
 (deadbeef:register-external "https://github.com/trivial-gray-streams/trivial-gray-streams"
                             "master")
+
 (deadbeef:register-external "https://github.com/rudolfochrist/cl-change-case"
+                            "master")
+(deadbeef:register-external "https://github.com/didierverna/asdf-flv"
                             "master")
 
 (deadbeef:register-external "https://gitlab.common-lisp.net/alexandria/alexandria.git"
