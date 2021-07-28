@@ -31,6 +31,8 @@
 
 (deadbeef:register-external "https://gitlab.common-lisp.net/alexandria/alexandria.git"
                             "master")
+(deadbeef:register-external "https://github.com/gwkkwg/trivial-backtrace"
+                            "master")
 
 (deadbeef:prepare-externals "build/deadbeef/")
 
