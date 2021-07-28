@@ -7,7 +7,7 @@
                                        (,(namestring *cwd*)
                                          ,(format nil "~abuild/asdf-cache/" *cwd*))))
 
-(load "/root/quicklisp/setup.lisp")
+(load "/cache-dir/quicklisp/setup.lisp")
 
 (push #P "./" asdf:*central-registry*)
 
