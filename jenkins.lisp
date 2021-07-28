@@ -1,12 +1,19 @@
-(load #P "quicklisp.lisp")
+(require "asdf")
 
-(setf quicklisp-quickstart::*home* #P"/tmp/quicklisp/")
+(push #P"third-party/deadbeef/" asdf:*central-registry*)
 
-(quicklisp-quickstart:install)
+(deadbeef:register-external "https://github.com/vindarel/cl-str.git"
+                            "master")
+(deadbeef:register-external "https://github.com/sionescu/fiveam.git"
+                            "master")
+(deadbeef:register-external "https://github.com/edicl/cl-ppcre"
+                            "master")
+
+(deadbeef:prepare-externals "build/deadbeef/")
 
 (push #P "./" asdf:*central-registry*)
 
-(ql:quickload :slite/tests)
+(asdf:load-sytem :slite/tests)
 
 (unless (fiveam:run-all-tests)
   (uiop:quit 1))
