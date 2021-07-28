@@ -19,6 +19,8 @@
                             "master")
 (deadbeef:register-external "https://github.com/edicl/cl-unicode"
                             "master")
+(deadbeef:register-external "https://github.com/edicl/flexi-streams"
+                            "master")
 (deadbeef:register-external "https://gitlab.common-lisp.net/alexandria/alexandria.git"
                             "master")
 
