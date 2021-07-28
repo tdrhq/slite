@@ -13,3 +13,6 @@ jobs:
           command: |
             curl -O https://beta.quicklisp.org/quicklisp.lisp
             sbcl --load quicklisp.lisp --eval '(quicklisp-quickstart:install)'
+      - run:
+          name: Run tests
+          command: sbcl --script jenkins.lisp
