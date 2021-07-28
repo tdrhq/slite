@@ -7,10 +7,7 @@
                                        (,(namestring *cwd*)
                                          ,(format nil "~abuild/asdf-cache/" *cwd*))))
 
-(uiop:copy-file "/quicklisp.lisp" "./quicklisp.lisp")
-(load "./quicklisp.lisp")
-
-(quicklisp-quickstart:install)
+(load "/root/quicklisp/setup.lisp")
 
 (push #P "./" asdf:*central-registry*)
 
