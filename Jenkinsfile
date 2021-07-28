@@ -21,6 +21,7 @@ pipeline {
                 sh "env"
                 sh "pwd"
                 sh "ls -l"
+                sh "ros install sbcl"
                 sh 'sbcl --script jenkins.lisp'
             }
         }

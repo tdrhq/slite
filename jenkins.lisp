@@ -1,6 +1,8 @@
 (require "asdf")
 
-(defvar *cwd* (uiop:getcwd))
+(setf (uiop:getenv "HOME") "/cache-dir/")
+
+(defvar *cwd* "/cache-dir/")
 
 (load "/cache-dir/quicklisp/setup.lisp")
 
