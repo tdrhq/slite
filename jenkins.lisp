@@ -24,7 +24,7 @@
 
 (push #P "./" asdf:*central-registry*)
 
-(asdf:load-sytem :slite/tests)
+(asdf:load-system :slite/tests)
 
 (unless (fiveam:run-all-tests)
   (uiop:quit 1))
