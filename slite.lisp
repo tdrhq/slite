@@ -11,26 +11,15 @@
   rendering so that we can run actions on this, and the test results
   aren't garbage collected in the meantime")
 
-(defmethod test-result ((result fiveam::test-passed))
-  t)
+(defgeneric test-result (result))
 
-(defmethod test-result ((result fiveam::test-result))
-  nil)
+(defgeneric test-name (result))
 
-(defmethod test-name ((test-case fiveam::test-case))
-  (fiveam::name test-case))
+(defgeneric test-expression (result))
 
-(defmethod test-expression ((result fiveam::test-result))
-  ;; To keep the expression concise, let's switch to the package
-  ;; before rendering it to a string
-  (let ((*package* (test-case-package (test-case result))))
-   (format nil "~s" (fiveam::test-expr result))))
+(defgeneric test-message (result))
 
-(defmethod test-message ((result fiveam::test-result))
-  (fiveam::reason result))
-
-(defmethod test-case ((result fiveam::test-result))
-  (fiveam::test-case result))
+(defgeneric test-case (test-result))
 
 (defun serialize-result (result)
   (list
@@ -38,8 +27,7 @@
    :success (test-result result)
    :reason (test-message result)))
 
-(defmethod test-case-package ((test-case fiveam::test-case))
-  (symbol-package (test-name test-case)))
+(defgeneric test-case-package (result))
 
 (defmethod process-results (results)
   (setf *last-results* results)
