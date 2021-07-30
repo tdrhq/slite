@@ -10,7 +10,9 @@
 
 (in-package :slite/tests)
 
-(def-suite* :slite/tests)
+(def-suite :slite)
+
+(def-suite* :slite/tests :in :slite)
 
 (test process-results-happy-path
   (let* ((test-case (make-instance 'test-case
