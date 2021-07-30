@@ -69,3 +69,9 @@
   (declare (ignore framework))
   (parachute:test (find-symbol name package)
     :report 'parachute:interactive))
+
+(defmethod slite/api:rem-test ((framework (eql :parachute))
+                               name
+                               package)
+  (parachute:remove-test
+   (find-symbol name package)))
