@@ -7,7 +7,9 @@
                 #:test-case
                 #:test-result-list)
   (:import-from #:parachute
-                #:find-test))
+                #:find-test)
+  (:import-from #:slite/parachute
+                #:fake-test-result))
 (in-package #:slite/test-parachute)
 
 (def-suite* :slite/test-parachute :in :slite)
@@ -33,39 +35,48 @@
   (with-fixture state ()
     (is (listp results))
     (is (eql 3 (length results))
-        "There should one test-result for foo-bar-1, foo-bar-2 and my-suite")
+        "There should one test-result for foo-bar-1, and two for foo-bar-2")
     (loop for x in results
-          do (is (typep x 'parachute:test-result)))))
+          do (is (typep x 'fake-test-result)))))
 
 (test find-test
   (with-fixture state ()
    (let ((foo-bar-2 (find-test 'foo-bar-2)))
      (is (not (null foo-bar-2)))
-     (is (member foo-bar-2
-                 (mapcar 'test-case results))))))
+     (let ((test-cases (mapcar 'test-case results)))
+       (is (member foo-bar-2
+                   test-cases)
+           "Expected to see ~S in ~S"
+           foo-bar-2
+           test-cases)))))
 
 (test test-result
   (with-fixture state ()
-    (let ((statuses (mapcar #'slite:test-result results)))
+    (let ((statuses (mapcar #'slite:test-result
+                            results)))
       (loop for x in statuses
             do
             (is (typep x 'boolean)))
-      (is (eql 1
+      (is (eql 2
                (count t statuses))))))
 
 (defun only-test-result (result)
   (elt (parachute:results result) 0))
 
 (test test-case-package
-  (let ((result (only-test-result (parachute:test 'foo-bar-1
-                                    :output (null-stream)))))
+  (let ((result (make-instance 'fake-test-result
+                               :test-case
+                               (only-test-result (parachute:test 'foo-bar-1
+                                     :output (null-stream))))))
     (is (equal "SLITE/TEST-PARACHUTE"
               (slite:test-case-package
                (slite:test-case result))))))
 
 (test test-name
-  (let ((result (only-test-result (parachute:test 'foo-bar-1
-                                    :output (null-stream)))))
+  (let ((result (make-instance 'fake-test-result
+                               :test-case
+                               (only-test-result (parachute:test 'foo-bar-1
+                                                   :output (null-stream))))))
     (is (equal 'foo-bar-1
               (slite:test-name
                (slite:test-case result))))))
@@ -74,7 +85,9 @@
 (test test-expression
   (let* ((result (only-test-result (parachute:test 'foo-bar-1
                                      :output (null-stream))))
-         (result (elt (parachute:results result) 0)))
+         (result (elt (parachute:results result) 0))
+         (result (make-instance 'fake-test-result
+                                :parachute-result result)))
     (is (equal (format nil "~S" '(parachute:is = 5 5))
                (slite:test-expression result)))))
 
@@ -85,6 +98,8 @@
 (test test-description
   (let* ((result (only-test-result (parachute:test 'foo-bar-2
                                      :output (null-stream))))
-         (result (elt (parachute:results result) 1)))
+         (result (elt (parachute:results result) 1))
+         (result (make-instance 'fake-test-result
+                                :parachute-result result)))
     (assert (equal "Expected 2 to be 4"
                (slite:test-message result))))  )

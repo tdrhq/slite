@@ -154,7 +154,11 @@
           (insert "\n\n")
 
           (unless (plist-get result :success)
-            (insert (plist-get result :reason))))
+            (insert "------------------\n")
+            (insert (plist-get result :reason))
+            (insert "\n")
+            (insert "------------------")
+            (insert "\n\n")))
         (setq slite--current-id id)
         (slite-details-mode)
         (slite--sl*-mode)
