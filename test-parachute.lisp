@@ -102,4 +102,15 @@
          (result (make-instance 'fake-test-result
                                 :parachute-result result)))
     (assert (equal "Expected 2 to be 4"
-               (slite:test-message result))))  )
+                   (slite:test-message result))))  )
+
+(test rerun-tests-in-debugger
+  (slite/api:rerun-in-debugger :parachute
+                               "FOO-BAR-1"
+                               "SLITE/TEST-PARACHUTE"))
+
+(test rerun-tests-in-debugger-failing
+  (signals simple-error
+   (slite/api:rerun-in-debugger :parachute
+                                "FOO-BAR-2"
+                                "SLITE/TEST-PARACHUTE")))

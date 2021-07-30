@@ -62,3 +62,10 @@
     :parachute))
 
 (pushnew 'guess-parachute slite/api:*framework-guessors*)
+
+(defmethod slite/api:rerun-in-debugger ((framework (eql :parachute))
+                                        name
+                                        package)
+  (declare (ignore framework))
+  (parachute:test (find-symbol name package)
+    :report 'parachute:interactive))
