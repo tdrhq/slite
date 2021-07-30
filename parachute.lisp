@@ -56,3 +56,9 @@
    (or
     (parachute:description result)
     (format nil "Failed: ~S" (slite:test-expression fake-result)))))
+
+(defun guess-parachute (result)
+  (when (typep result 'parachute:result)
+    :parachute))
+
+(pushnew 'guess-parachute slite/api:*framework-guessors*)

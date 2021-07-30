@@ -56,7 +56,8 @@
 (defgeneric test-case-package (result))
 
 (defmethod process-results (results)
-  (let ((results (test-result-list results))
+  (let ((framework (slite/api:guess-framework results))
+        (results (test-result-list results))
         (test-case-map nil))
     (setf *last-results* results)
     (loop for result in results do
@@ -73,6 +74,7 @@
              (list
               :id
               (list
+               :framework framework
                :package (let ((package (test-case-package test-case)))
                           (when package
                            (package-name package)))

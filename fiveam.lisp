@@ -79,3 +79,12 @@
   (loop for suite in (cons nil (sort (copy-list fiveam::*toplevel-suites*) #'string<=))
         for results = (if (fiveam::suite-emptyp suite) nil (fiveam::run suite))
         appending results))
+
+(defun guess-fiveam (result)
+  (when
+   (and
+    (listp result)
+    (typep (car result) 'fiveam::test-result))
+    :fiveam))
+
+(pushnew 'guess-fiveam slite/api:*framework-guessors*)
