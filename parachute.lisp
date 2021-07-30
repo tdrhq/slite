@@ -35,7 +35,7 @@
         appending (test-result-list x)))
 
 
-(defmethod slite:test-result ((result fake-test-result))
+(defmethod slite:test-result-success-p ((result fake-test-result))
   (ecase (parachute:status (parachute-result result))
     (:failed nil)
     (:passed t)))

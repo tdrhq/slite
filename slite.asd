@@ -8,7 +8,8 @@
   :description "SLIME based Test-runner for FiveAM tests (and possibly others in the future)"
   :depends-on (:str
                :fiveam)
-  :components ((:file "slite")
+  :components ((:file "api")
+               (:file "slite")
                (:file "fiveam")))
 
 (defsystem :slite/parachute

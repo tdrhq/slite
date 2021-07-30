@@ -52,7 +52,7 @@
 
 (test test-result
   (with-fixture state ()
-    (let ((statuses (mapcar #'slite:test-result
+    (let ((statuses (mapcar #'slite:test-result-success-p
                             results)))
       (loop for x in statuses
             do

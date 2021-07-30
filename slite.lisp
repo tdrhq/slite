@@ -13,7 +13,8 @@
            #:test-case-package
            #:test-name
            #:test-expression
-           #:test-message))
+           #:test-message
+           #:test-result-success-p))
 (in-package :slite)
 
 (defvar *engine* nil)
@@ -31,7 +32,7 @@
   rendering so that we can run actions on this, and the test results
   aren't garbage collected in the meantime")
 
-(defgeneric test-result (result))
+(defgeneric test-result-success-p (result))
 
 (defgeneric test-name (result))
 
@@ -49,7 +50,7 @@
 (defun serialize-result (result)
   (list
    :expression (test-expression result)
-   :success (test-result result)
+   :success (test-result-success-p result)
    :reason (test-message result)))
 
 (defgeneric test-case-package (result))
@@ -62,7 +63,7 @@
       (pushnew result (assoc-value test-case-map (test-case result))))
     (flet ((test-case-success-p (results)
              ;; we could do soooo much better
-             (every 'test-result results)))
+             (every 'test-result-success-p results)))
      (let ((case-result-map (stable-sort test-case-map #'string<
                                  ;; "nil" comes before "t"
                                          :key (lambda (x)
@@ -85,7 +86,7 @@
                         "PASS" "FAIL")
                     (string (test-name test-case))
                     (format nil "~a/~a"
-                            (length (remove-if-not #'test-result results))
+                            (length (remove-if-not #'test-result-success-p results))
                             (length results)))))))))
 
 (defmethod get-test-case-details (test-case)
@@ -108,7 +109,7 @@
 
 
 (defun on-pass (results &key shell)
-  (when (every #'test-result results)
+  (when (every #'test-result-result-success-p results)
     (uiop:run-program (list "bash" "-c" shell)
                       :output *standard-output*
                       :error-output *error-output*))

@@ -2,6 +2,7 @@
   (:use #:cl
         #:alexandria)
   (:import-from #:slite
+                #:test-result-success-p
                 #:rerun-in-debugger-impl
                 #:remove-test
                 #:*engine*
@@ -14,10 +15,10 @@
                 #:test-case-package))
 (in-package :slite/fiveam)
 
-(defmethod test-result ((result fiveam::test-passed))
+(defmethod test-result-success-p ((result fiveam::test-passed))
   t)
 
-(defmethod test-result ((result fiveam::test-result))
+(defmethod test-result-success-p ((result fiveam::test-result))
   nil)
 
 (defmethod test-name ((test-case fiveam::test-case))
