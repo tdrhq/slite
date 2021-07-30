@@ -5,9 +5,9 @@
 ![Screenshot of Slite in Action](https://tdrhq.com/slite-screenshot.png)
 
 Slite stands for SLIme TEst runner. Slite interactively runs your
-Common Lisp tests (currently only FiveAM supported). It allows you to
-see the summary of test failures, jump to test definitions, rerun
-tests with debugger all from inside Emacs.
+Common Lisp tests (currently only FiveAM and Parachute are
+supported). It allows you to see the summary of test failures, jump to
+test definitions, rerun tests with debugger all from inside Emacs.
 
 We support both SLIME and SLY.
 
@@ -34,7 +34,8 @@ tests will be on the top.
 
 Press `RET` on a test to see details about the failure. On the table,
 or in the details buffer, press `r` to re-run the test with debugger
-(i.e. when the test fails the debugger will open up).
+(i.e. when the test fails the debugger will open up). Delete a test
+with `M-x slite-delete-test`.
 
 Press `M-.` on the test name in the details view to jump to the
 test. (This *only* works on Lispworks, and *only* if you use a
@@ -42,7 +43,6 @@ test. (This *only* works on Lispworks, and *only* if you use a
 
 Honestly, that's about all you need to know. Although, there's one
 more neat little feature:
-
 
 ## Running shell commands when tests pass
 
@@ -58,6 +58,14 @@ work even when you're using a remote slime session.
 For example, `(setq slite-success-shell-hook "cd ~/code && git commit
 -a -m ...")` will do essentially what I was suggesting earlier. This
 API is a little awkward, so we might change this in the future
+
+## Run Parachute tests
+
+Ensure you `(asdf:load-system :slite/parachute)`. At this point, you
+use `M-x slite-run` to run tests like `(parachute:test 'foo-bar)`. All
+the same functionality such as debugging, deleting should
+work. Jumping to test is currently not surpported.
+
 
 # Authors
 
