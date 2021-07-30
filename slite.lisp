@@ -34,7 +34,7 @@
 
 (defgeneric test-result-success-p (result))
 
-(defgeneric test-name (result))
+(defgeneric test-name (test-case))
 
 (defgeneric test-expression (result))
 
