@@ -2,7 +2,9 @@
   (:use :cl)
   (:export
    #:*framework-guessors*
-   #:guess-framework))
+   #:guess-framework
+   #:rem-test
+   #:rerun-in-debugger))
 (in-package :slite/api)
 
 (defvar *framework-guessors* nil)
@@ -12,3 +14,7 @@
         for response = (funcall guessor result)
         if response
           return response))
+
+(defgeneric rem-test (framework name package))
+
+(defgeneric rerun-in-debugger (framework name package))

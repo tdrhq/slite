@@ -204,9 +204,10 @@
 (defun slite-rerun-in-debugger ()
   (interactive)
   (let* ((id (slite--current-id))
+         (framework (plist-get id :framework))
          (name (plist-get id :test-name))
          (package (plist-get id :package)))
-    (slite--sl*-eval-async `(slite::rerun-in-debugger ,name ,package)
+    (slite--sl*-eval-async `(slite/api::rerun-in-debugger ,framework ,name ,package)
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
@@ -225,10 +226,11 @@
 (defun slite-delete-test ()
   (interactive)
   (let* ((id (slite--current-id))
+         (framework (plist-get id :framework))
          (name (plist-get id :test-name))
          (package (plist-get id :package)))
    (slite--sl*-eval-async
-    `(slite::rem-test ,name ,package)
+    `(slite/api::rem-test ,framework ,name ,package)
     (lambda (x) (message "Test deleted")))))
 
 

@@ -103,12 +103,6 @@
                (package-name package)))
             (length results))))
 
-(defun rem-test (name package)
-  (remove-test *engine* name package))
-
-(defun rerun-in-debugger (name package)
-  (rerun-in-debugger-impl *engine* name package))
-
 
 (defun on-pass (results &key shell)
   (when (every #'test-result-result-success-p results)

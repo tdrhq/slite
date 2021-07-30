@@ -40,14 +40,8 @@
   (symbol-package (test-name test-case)))
 
 
-(defclass fiveam-engine (engine)
-  ())
-
-(unless *engine*
-  (setf *engine* (make-instance 'fiveam-engine)))
-
-(defmethod remove-test ((engine fiveam-engine) name package)
-  (declare (ignore engine))
+(defmethod slite/api:rem-test ((framwork (eql :fiveam)) name package)
+  (declare (ignore framework))
   (cond
     (package
      (fiveam:rem-test (find-symbol name package)))
@@ -62,8 +56,8 @@
              do
                 (fiveam:rem-test existing)))))
 
-(defmethod rerun-in-debugger-impl ((engine fiveam-engine) name package)
-  (declare (ignore engine))
+(defmethod slite/api:rerun-in-debugger ((framework (eql :fiveam)) name package)
+  (declare (ignore framework))
     (let ((sym (find-symbol name package)))
     (let ((fiveam:*on-error* :debug)
           (fiveam:*on-failure* :debug))
