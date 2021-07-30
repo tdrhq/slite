@@ -7,7 +7,13 @@
            #:engine
            #:remove-test
            #:rerun-in-debugger-impl
-           #:run-all-fiveam-tests))
+           #:run-all-fiveam-tests
+           #:test-result-list
+           #:test-case
+           #:test-case-package
+           #:test-name
+           #:test-expression
+           #:test-message))
 (in-package :slite)
 
 (defvar *engine* nil)
@@ -35,6 +41,11 @@
 
 (defgeneric test-case (test-result))
 
+(defgeneric test-result-list (response))
+
+(defmethod test-result-list ((response list))
+  response)
+
 (defun serialize-result (result)
   (list
    :expression (test-expression result)
@@ -44,8 +55,9 @@
 (defgeneric test-case-package (result))
 
 (defmethod process-results (results)
-  (setf *last-results* results)
-  (let ((test-case-map nil))
+  (let ((results (test-result-list results))
+        (test-case-map nil))
+    (setf *last-results* results)
     (loop for result in results do
       (pushnew result (assoc-value test-case-map (test-case result))))
     (flet ((test-case-success-p (results)

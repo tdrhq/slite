@@ -11,7 +11,16 @@
   :components ((:file "slite")
                (:file "fiveam")))
 
+(defsystem :slite/parachute
+  :serial t
+  :depends-on (:slite
+               :parachute)
+  :components ((:file "parachute")))
+
 (defsystem :slite/tests
   :serial t
-  :depends-on (:slite)
-  :components ((:file "test-slite")))
+  :depends-on (:slite
+               :slite/parachute
+               :parachute)
+  :components ((:file "test-slite")
+               (:file "test-parachute")))

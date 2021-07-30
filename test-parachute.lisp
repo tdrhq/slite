@@ -1,0 +1,90 @@
+;; -*- coding: utf-8 -*-
+(defpackage #:slite/test-parachute
+  (:use #:cl
+        #:alexandria
+        #:fiveam)
+  (:import-from #:slite
+                #:test-case
+                #:test-result-list)
+  (:import-from #:parachute
+                #:find-test))
+(in-package #:slite/test-parachute)
+
+(def-suite* :slite/test-parachute :in :slite)
+
+(parachute:define-test my-suite)
+
+(parachute:define-test foo-bar-2
+  :parent my-suite
+  (parachute:is = 3 3)
+  (parachute:is = 2 4
+                "Expected 2 to be 4"))
+
+(parachute:define-test foo-bar-1
+  :parent my-suite
+  (parachute:is = 5 5))
+
+(def-fixture state ()
+  (let ((results (test-result-list (parachute:test 'my-suite
+                                     :output (null-stream)))))
+    (&body)))
+
+(test preconditions
+  (with-fixture state ()
+    (is (listp results))
+    (is (eql 3 (length results))
+        "There should one test-result for foo-bar-1, foo-bar-2 and my-suite")
+    (loop for x in results
+          do (is (typep x 'parachute:test-result)))))
+
+(test find-test
+  (with-fixture state ()
+   (let ((foo-bar-2 (find-test 'foo-bar-2)))
+     (is (not (null foo-bar-2)))
+     (is (member foo-bar-2
+                 (mapcar 'test-case results))))))
+
+(test test-result
+  (with-fixture state ()
+    (let ((statuses (mapcar #'slite:test-result results)))
+      (loop for x in statuses
+            do
+            (is (typep x 'boolean)))
+      (is (eql 1
+               (count t statuses))))))
+
+(defun only-test-result (result)
+  (elt (parachute:results result) 0))
+
+(test test-case-package
+  (let ((result (only-test-result (parachute:test 'foo-bar-1
+                                    :output (null-stream)))))
+    (is (equal "SLITE/TEST-PARACHUTE"
+              (slite:test-case-package
+               (slite:test-case result))))))
+
+(test test-name
+  (let ((result (only-test-result (parachute:test 'foo-bar-1
+                                    :output (null-stream)))))
+    (is (equal 'foo-bar-1
+              (slite:test-name
+               (slite:test-case result))))))
+
+
+(test test-expression
+  (let* ((result (only-test-result (parachute:test 'foo-bar-1
+                                     :output (null-stream))))
+         (result (elt (parachute:results result) 0)))
+    (is (equal (format nil "~S" '(parachute:is = 5 5))
+               (slite:test-expression result)))))
+
+(defun null-stream ()
+  "This improves the logging. But also, on LW, this causes UTF-8 issues for me"
+  (make-string-output-stream))
+
+(test test-description
+  (let* ((result (only-test-result (parachute:test 'foo-bar-2
+                                     :output (null-stream))))
+         (result (elt (parachute:results result) 1)))
+    (assert (equal "Expected 2 to be 4"
+               (slite:test-message result))))  )
