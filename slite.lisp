@@ -2,9 +2,23 @@
   (:use :cl
    :alexandria)
   (:export #:test-result
-           #:run-all-fiveam-tests
-           #:on-pass))
+           #:on-pass
+           #:*engine*
+           #:engine
+           #:remove-test
+           #:rerun-in-debugger-impl
+           #:run-all-fiveam-tests))
 (in-package :slite)
+
+(defvar *engine* nil)
+
+(defclass engine ()
+  ()
+  (:documentation "An abstraction over the test framework to integrate with slite"))
+
+(defgeneric remove-test (engine name package))
+
+(defgeneric rerun-in-debugger-impl (engine name package))
 
 (defvar *last-results* nil
   "Stores the last test result. We'll always store this just before
@@ -74,37 +88,11 @@
                (package-name package)))
             (length results))))
 
-;; modified from fiveam:run-all-tests
-(defmethod run-all-fiveam-tests ()
-  (loop for suite in (cons nil (sort (copy-list fiveam::*toplevel-suites*) #'string<=))
-        for results = (if (fiveam::suite-emptyp suite) nil (fiveam::run suite))
-        appending results))
-
 (defun rem-test (name package)
-  (cond
-    (package
-     (fiveam:rem-test (find-symbol name package)))
-    (t
-     ;; We're most likely looking at an uninterned symbol, like #:foo
-     ;; Our best bet is to walk through all the tests and remove all
-     ;; tests with the same name but uninterned package.
-     (loop for existing being the hash-keys of fiveam::*test*
-           if (and
-               (string= name existing)
-               (not (symbol-package existing)))
-             do
-             (fiveam:rem-test existing)))))
+  (remove-test *engine* name package))
 
 (defun rerun-in-debugger (name package)
-  (let ((sym (find-symbol name package)))
-    (let ((fiveam:*on-error* :debug)
-          (fiveam:*on-failure* :debug))
-      (let ((result (fiveam:run sym)))
-        (cond
-          ((every #'test-result result)
-           "PASS")
-          (t
-           "FAIL"))))))
+  (rerun-in-debugger-impl *engine* name package))
 
 
 (defun on-pass (results &key shell)

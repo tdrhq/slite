@@ -2,6 +2,10 @@
   (:use #:cl
         #:alexandria)
   (:import-from #:slite
+                #:rerun-in-debugger-impl
+                #:remove-test
+                #:*engine*
+                #:engine
                 #:test-result
                 #:test-name
                 #:test-expression
@@ -33,3 +37,44 @@
 
 (defmethod test-case-package ((test-case fiveam::test-case))
   (symbol-package (test-name test-case)))
+
+
+(defclass fiveam-engine (engine)
+  ())
+
+(unless *engine*
+  (setf *engine* (make-instance 'fiveam-engine)))
+
+(defmethod remove-test ((engine fiveam-engine) name package)
+  (declare (ignore engine))
+  (cond
+    (package
+     (fiveam:rem-test (find-symbol name package)))
+    (t
+     ;; We're most likely looking at an uninterned symbol, like #:foo
+     ;; Our best bet is to walk through all the tests and remove all
+     ;; tests with the same name but uninterned package.
+     (loop for existing being the hash-keys of fiveam::*test*
+           if (and
+               (string= name existing)
+               (not (symbol-package existing)))
+             do
+                (fiveam:rem-test existing)))))
+
+(defmethod rerun-in-debugger-impl ((engine fiveam-engine) name package)
+  (declare (ignore engine))
+    (let ((sym (find-symbol name package)))
+    (let ((fiveam:*on-error* :debug)
+          (fiveam:*on-failure* :debug))
+      (let ((result (fiveam:run sym)))
+        (cond
+          ((every #'test-result result)
+           "PASS")
+          (t
+           "FAIL"))))))
+
+;; modified from fiveam:run-all-tests
+(defmethod slite:run-all-fiveam-tests ()
+  (loop for suite in (cons nil (sort (copy-list fiveam::*toplevel-suites*) #'string<=))
+        for results = (if (fiveam::suite-emptyp suite) nil (fiveam::run suite))
+        appending results))
