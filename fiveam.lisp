@@ -63,7 +63,7 @@
           (fiveam:*on-failure* :debug))
       (let ((result (fiveam:run sym)))
         (cond
-          ((every #'test-result result)
+          ((every #'test-result-success-p result)
            "PASS")
           (t
            "FAIL"))))))
