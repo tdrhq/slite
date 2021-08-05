@@ -130,7 +130,8 @@
     (parachute:define-test my-suite)
     (is (equal
          nil
-         (test-result-list (parachute:test 'my-suite))))
+         (test-result-list (parachute:test 'my-suite
+                             :output (null-stream)))))
     (parachute:define-test "foo-bar"
       :parent my-suite
       (parachute:is = 5 5))
