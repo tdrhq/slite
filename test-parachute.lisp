@@ -34,7 +34,7 @@
   (parachute:is = 4 5))
 
 (parachute:define-test another
-  :parent unuse
+  :parent unused
   (parachute:is = 4 5))
 
 (def-fixture state ()
