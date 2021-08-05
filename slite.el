@@ -92,7 +92,7 @@
     ))
 
 (defun slite--all-tests-passed-p (results)
-  (every (lambda (x)
+  (cl-every (lambda (x)
            (equal "PASS"
                   (car (plist-get x :data))))
          results))
