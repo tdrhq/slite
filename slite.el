@@ -2,6 +2,8 @@
 
 (provide 'slite)
 
+(require 'cl-lib)
+
 (define-derived-mode slite-results-mode tabulated-list-mode
   "CL Test Results"
   "dfdfd"
@@ -99,7 +101,7 @@
 
 (defun slite--sl*-read-from-minibuffer (&rest args)
   (apply
-   (ecase (slite--slime-impl)
+   (cl-ecase (slite--slime-impl)
      (:slime 'slime-read-from-minibuffer)
      (:sly 'sly-read-from-minibuffer))
    args))
@@ -166,14 +168,14 @@
         (switch-to-buffer-other-window buffer)))))
 
 (defun slite--set-buffer-package (package)
-  (ecase (slite--slime-impl)
+  (cl-ecase (slite--slime-impl)
     (:slime
      (setq slime-buffer-package package))
     (:sly
      (setq sly-buffer-package package))))
 
 (defun slite--sl*-mode ()
-  (ecase (slite--slime-impl)
+  (cl-ecase (slite--slime-impl)
     (:slime
      (slime-mode))
     (:sly
@@ -188,14 +190,14 @@
       slite--current-id))
 
 (defun slite--sl*-eval-async (expn callback)
-  (ecase (slite--slime-impl)
+  (cl-ecase (slite--slime-impl)
     (:slime
      (slime-eval-async expn callback))
     (:sly
      (sly-eval-async expn callback))))
 
 (defun slite--sl*-compile-defun ()
-  (ecase (slite--slime-impl)
+  (cl-ecase (slite--slime-impl)
     (:slime
      (slime-compile-defun))
     (:sly
@@ -252,7 +254,7 @@
   'slite-run)
 
 
-(add-hook (case (slite--slime-impl)
+(add-hook (cl-case (slite--slime-impl)
             (:sly
              'sly-compilation-finished-hook)
             (:slime
@@ -260,7 +262,7 @@
           'slite--compilation-finished)
 
 (defun slite--slime-mode-map ()
-  (case (slite--slime-impl)
+  (cl-case (slite--slime-impl)
     (:slime
      slime-mode-map)
     (:sly
