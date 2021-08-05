@@ -98,7 +98,7 @@
     (assert test-case)
     (format nil "Test Detail: ~%~a in package ~a (~d checks): ~%"
             (test-name test-case)
-            (let ((package (symbol-package (test-name test-case))))
+            (let ((package (test-case-package test-case)))
               (when package
                (package-name package)))
             (length results))))

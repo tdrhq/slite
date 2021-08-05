@@ -26,6 +26,12 @@
   :parent my-suite
   (parachute:is = 5 5))
 
+(parachute:define-test unused)
+
+(parachute:define-test "blah blah"
+  :parent unused
+  (parachute:is = 5 5))
+
 (def-fixture state ()
   (let ((results (test-result-list (parachute:test 'my-suite
                                      :output (null-stream)))))
@@ -114,3 +120,23 @@
    (slite/api:rerun-in-debugger :parachute
                                 "FOO-BAR-2"
                                 "SLITE/TEST-PARACHUTE")))
+
+(def-fixture empty-parachute ()
+  (let ((parachute::*test-indexes* (make-hash-table)))
+    (&body)))
+
+(test parachute-test-with-strings
+  (with-fixture empty-parachute ()
+    (parachute:define-test my-suite)
+    (is (equal
+         nil
+         (test-result-list (parachute:test 'my-suite))))
+    (parachute:define-test "foo-bar"
+      :parent my-suite
+      (parachute:is = 5 5))
+    (let ((results (test-result-list (parachute:test 'my-suite))))
+      (is (equal
+           1
+           (length results)))
+      (finishes
+       (slite::process-results results)))))

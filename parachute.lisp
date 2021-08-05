@@ -17,6 +17,12 @@
                      :initarg :parachute-result))
   (:documentation "Simulates TEST-RESULT and TEST-CASE from FiveAM"))
 
+(defclass fake-test-case ()
+  ((name :initarg :name
+         :accessor name)
+   (package :initarg :package
+            :accessor %package)))
+
 (defmethod test-result-list ((result result))
   nil)
 
