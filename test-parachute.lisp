@@ -26,10 +26,15 @@
   :parent my-suite
   (parachute:is = 5 5))
 
+;; this is used for manual testing, not used in these tests
 (parachute:define-test unused)
 
 (parachute:define-test "blah blah"
   :parent unused
+  (parachute:is = 4 5))
+
+(parachute:define-test another
+  :parent unuse
   (parachute:is = 4 5))
 
 (def-fixture state ()
