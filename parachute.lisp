@@ -67,7 +67,9 @@
                                         name
                                         package)
   (declare (ignore framework))
-  (parachute:test (find-symbol name package)
+  ;; name could be either string or symbol, but it looks like
+  ;; parachute:find-test can handle both correctly
+  (parachute:test (parachute:find-test name package)
     :report 'parachute:interactive)
   (values))
 
