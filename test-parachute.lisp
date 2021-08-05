@@ -30,7 +30,7 @@
 
 (parachute:define-test "blah blah"
   :parent unused
-  (parachute:is = 5 5))
+  (parachute:is = 4 5))
 
 (def-fixture state ()
   (let ((results (test-result-list (parachute:test 'my-suite

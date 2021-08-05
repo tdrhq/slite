@@ -55,17 +55,31 @@
 
 (defgeneric test-case-package (result))
 
+(defun ensure-safe-for-sl* (x)
+  "If we send a bad object over the wire, SLY/SLIME can go into a bad
+state, so let's get rid of it early"
+  (typecase x
+    (standard-object
+     (error "Unsafe object for SL* wire: ~s" x))
+    (atom t)
+    (list
+     (mapc #'ensure-safe-for-sl* x))
+    (t
+     (error "Unsafe object for SL* wire: ~S" x)))
+  x)
+
 (defmethod process-results (results)
-  (let ((framework (slite/api:guess-framework results))
-        (results (test-result-list results))
-        (test-case-map nil))
-    (setf *last-results* results)
-    (loop for result in results do
-      (pushnew result (assoc-value test-case-map (test-case result))))
-    (flet ((test-case-success-p (results)
-             ;; we could do soooo much better
-             (every 'test-result-success-p results)))
-     (let ((case-result-map (stable-sort test-case-map #'string<
+  (ensure-safe-for-sl*
+   (let ((framework (slite/api:guess-framework results))
+         (results (test-result-list results))
+         (test-case-map nil))
+     (setf *last-results* results)
+     (loop for result in results do
+       (pushnew result (assoc-value test-case-map (test-case result))))
+     (flet ((test-case-success-p (results)
+              ;; we could do soooo much better
+              (every 'test-result-success-p results)))
+       (let ((case-result-map (stable-sort test-case-map #'string<
                                  ;; "nil" comes before "t"
                                          :key (lambda (x)
                                                 (test-case-success-p (cdr x))) )))
@@ -89,7 +103,7 @@
                     (string (test-name test-case))
                     (format nil "~a/~a"
                             (length (remove-if-not #'test-result-success-p results))
-                            (length results)))))))))
+                            (length results))))))))))
 
 (defmethod get-test-case-details (test-case)
   (let* ((results (loop for res in *last-results*
@@ -110,3 +124,9 @@
                       :output *standard-output*
                       :error-output *error-output*))
   results)
+
+(defmethod slite/api:rem-test :around (framework name package)
+  (ensure-safe-for-sl* (call-next-method)))
+
+(defmethod slite/api:rerun-in-debugger :around (framework name package)
+  (ensure-safe-for-sl* (call-next-method)))

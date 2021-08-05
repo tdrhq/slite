@@ -3,6 +3,7 @@
         #:fiveam
         #:alexandria)
   (:import-from #:slite
+                #:ensure-safe-for-sl*
                 #:process-results)
   (:import-from #:fiveam
                 #:test-case
@@ -32,3 +33,15 @@
 (test demo-test
   (is (eql 3 (+  1 2)))
   (is (eql 4 (+ 2 2))))
+
+(defclass dummy () ())
+
+(test ensure-safe-for-sl*
+  (is (equal "foo" (ensure-safe-for-sl* "foo")))
+  (signals error
+    (ensure-safe-for-sl* (make-instance 'dummy)))
+  (is (equal 8 (ensure-safe-for-sl* 8)))
+  (is (equal 'foo (ensure-safe-for-sl* 'foo)))
+  (is (equal (list 8 "foo") (ensure-safe-for-sl* (list 8 "foo"))))
+  (signals error
+    (ensure-safe-for-sl* (list "foo" (make-instance 'dummy)))))
