@@ -134,7 +134,8 @@
     (parachute:define-test "foo-bar"
       :parent my-suite
       (parachute:is = 5 5))
-    (let ((results (test-result-list (parachute:test 'my-suite))))
+    (let ((results (test-result-list (parachute:test 'my-suite
+                                       :output (null-stream)))))
       (is (equal
            1
            (length results)))
