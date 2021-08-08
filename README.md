@@ -1,6 +1,6 @@
-[![tdrhq](https://circleci.com/gh/tdrhq/slite.svg?style=shield)](https://app.circleci.com/pipelines/github/tdrhq/slite?branch=main)
-
 # SLITE
+
+[![tdrhq](https://circleci.com/gh/tdrhq/slite.svg?style=shield)](https://app.circleci.com/pipelines/github/tdrhq/slite?branch=main)
 
 ![Screenshot of Slite in Action](https://tdrhq.com/slite-screenshot.png)
 
