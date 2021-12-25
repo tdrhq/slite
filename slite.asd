@@ -10,7 +10,8 @@
                :fiveam)
   :components ((:file "api")
                (:file "slite")
-               (:file "fiveam")))
+               (:file "fiveam"))
+  :in-order-to ((test-op (test-op "slite/tests"))))
 
 (defsystem :slite/parachute
   :serial t
@@ -24,4 +25,9 @@
                :slite/parachute
                :parachute)
   :components ((:file "test-slite")
-               (:file "test-parachute")))
+               (:file "test-parachute"))
+  :perform (test-op (o c)
+                    (unless
+                        (symbol-call '#:fiveam '#:run!
+                                     :slite/tests)
+                      (error "Some tests were failed!"))))
