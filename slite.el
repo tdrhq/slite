@@ -60,13 +60,14 @@
 
 
 (cl-defun slite--parse-reason (id)
-  (or
-   (let ((results (plist-get id :results)))
-     (dolist (test-result results)
-       (let ((reason (plist-get test-result :reason)))
-         (unless (plist-get test-result :success)
-           (cl-return (slite--format-one-line-reason reason))))))
-   ""))
+  (cl-block nil
+   (or
+    (let ((results (plist-get id :results)))
+      (dolist (test-result results)
+        (let ((reason (plist-get test-result :reason)))
+          (unless (plist-get test-result :success)
+            (cl-return (slite--format-one-line-reason reason))))))
+    "")))
 
 (defun slite--show-test-results (results buffer)
   (message "Got test results")
