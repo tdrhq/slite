@@ -59,7 +59,7 @@
    (replace-regexp-in-string "\n" "" s )))
 
 
-(defun slite--parse-reason (id)
+(cl-defun slite--parse-reason (id)
   (or
    (let ((results (plist-get id :results)))
      (dolist (test-result results)
