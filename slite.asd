@@ -23,7 +23,7 @@
   :serial t
   :depends-on (:slite
                :lisp-unit2)
-  :components ())
+  :components ((:file "lisp-unit2")))
 
 (defsystem :slite/tests
   :serial t

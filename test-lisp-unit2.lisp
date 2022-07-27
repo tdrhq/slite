@@ -4,11 +4,13 @@
         #:fiveam)
   (:import-from #:slite
                 #:test-result-list)
+  (:import-from #:slite/lisp-unit2
+                #:fake-test-result)
   (:local-nicknames (#:a #:alexandria)
                     (#:unit #:lisp-unit2)))
 (in-package :slite/test-lisp-unit2)
 
-(def-suite* :slite/test-lisp-uni2 :in :slite)
+(def-suite* :slite/test-lisp-unit2 :in :slite)
 
 (unit:define-test simple-test
     (:tags '(bar))
@@ -33,6 +35,6 @@
 (test preconditions
   (with-fixture state ()
     (is (listp results))
-    (is (eql 2 (length results)))
+    (is (eql 5 (length results)))
     (loop for x in results
-          do (is (typep x 'unit:test-result)))))
+          do (is (typep x 'fake-test-result)))))
