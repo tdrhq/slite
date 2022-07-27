@@ -20,6 +20,10 @@
   (unit:assert-eql 1 1)
   (unit:assert-eql 2 4))
 
+(unit:define-test error-test
+  (:tags '(bar))
+  (error "blah blah"))
+
 ;;(unit:run-tests :tags 'bar)
 
 (def-fixture state ()
