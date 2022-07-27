@@ -19,13 +19,21 @@
                :parachute)
   :components ((:file "parachute")))
 
+(defsystem :slite/lisp-unit2
+  :serial t
+  :depends-on (:slite
+               :lisp-unit2)
+  :components ())
+
 (defsystem :slite/tests
   :serial t
   :depends-on (:slite
                :slite/parachute
+               :slite/lisp-unit2
                :parachute)
   :components ((:file "test-slite")
-               (:file "test-parachute"))
+               (:file "test-parachute")
+               (:file "test-lisp-unit2"))
   :perform (test-op (o c)
                     (unless
                         (symbol-call '#:fiveam '#:run!
