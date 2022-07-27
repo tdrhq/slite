@@ -17,6 +17,7 @@
 
 (unit:define-test another-test2
   (:tags '(bar))
+  (unit:assert-eql 1 1)
   (unit:assert-eql 2 4))
 
 ;;(unit:run-tests :tags 'bar)

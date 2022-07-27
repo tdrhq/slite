@@ -62,3 +62,19 @@
         expr)
        (t
         (unit::form expr))))))
+
+(defgeneric guess-lisp-unit2 (result)
+  (:method (all)
+    (log:info "Got bad case: ~S" result)
+    nil)
+  (:method ((result unit:test-results-db))
+    :lisp-unit2))
+
+(pushnew 'guess-lisp-unit2 slite/api:*framework-guessors*)
+
+(defmethod slite/api:rerun-in-debugger ((framework (eql :lisp-unit2))
+                                        name
+                                        package)
+  (unit:with-failure-debugging ()
+    (unit:run-tests :tests (list (find-symbol name package))))
+  t)
