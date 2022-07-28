@@ -65,7 +65,6 @@
 
 (defgeneric guess-lisp-unit2 (result)
   (:method (all)
-    (log:info "Got bad case: ~S" result)
     nil)
   (:method ((result unit:test-results-db))
     :lisp-unit2))
