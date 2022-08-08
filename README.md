@@ -37,9 +37,15 @@ or in the details buffer, press `r` to re-run the test with debugger
 (i.e. when the test fails the debugger will open up). Delete a test
 with `M-x slite-delete-test`.
 
+Press Delete to delete a test (useful when you rename a test and want
+to delete the old test).
+
 Press `M-.` on the test name in the details view to jump to the
 test. (This *only* works on Lispworks, and *only* if you use a
 [patched](https://github.com/tdrhq/fiveam) version of FiveAM)
+
+Press `C-c j` to compile the current expression, and then rerun the
+tests. (Essentially equivalent to `C-c C-c` followed by `C-c v`)
 
 Honestly, that's about all you need to know. Although, there's one
 more neat little feature:

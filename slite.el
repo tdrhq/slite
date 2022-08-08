@@ -113,17 +113,26 @@
                                           (car slite-history)
                                           'slite-history)))
 
+  (slite--run-expr cmd buffer))
+
+(defun slite--run-expr (cmd &optional buffer)
   (unless (bufferp buffer)
-    (setq buffer (get-buffer-create "*Test Results*")))
+    (setq buffer (get-buffer-create "*Test Results*"))
+    (with-current-buffer buffer
+      (setq slite--last-expression cmd)))
   (message "Waiting for test results...")
   (slite--sl*-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
-    (lambda (results)
-      (when (and
-             slite-success-hook
-             (slite--all-tests-passed-p results))
-        (funcall slite-success-hook))
+                         (lambda (results)
+                           (when (and
+                                  slite-success-hook
+                                  (slite--all-tests-passed-p results))
+                             (funcall slite-success-hook))
 
-      (slite--show-test-results results buffer))))
+                           (slite--show-test-results results buffer))))
+
+(defun slite-rerun ()
+  (interactive)
+  (slite--run-expr slite--last-expression))
 
 (defun slite--on-success ()
   (when slite-success-shell-hook
@@ -202,7 +211,7 @@
     (:slime
      (slime-compile-defun))
     (:sly
-     (sly-compile-defun))))
+     (sly-compile-defun 1))))
 
 (defun slite-rerun-in-debugger ()
   (interactive)
@@ -214,17 +223,30 @@
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
+(defvar-local slite--buffer-expression nil
+  "The command used to generate the tests in this buffer, we'll
+  use this for slite-rerun")
+
 (defvar slite--last-command-p nil)
+(defvar slite--last-read-only-mode nil)
 
 (defun slite-compile-defun-and-run-tests ()
   (interactive)
-  (setq slite--last-command-p t)
-  (slite--sl*-compile-defun))
+  (cond
+   (slite--last-command-p
+    (message "A compile-defun-and-run-tests is still running (if this is incorrect, setq slite--last-command-p to nil"))
+   (t
+    (setq slite--last-command-p t)
+    (setq slite--last-read-only-mode buffer-read-only)
+    (setq buffer-read-only t)
+    (slite--sl*-compile-defun))))
 
 (defun slite--compilation-finished (successp notes buffer loadp)
-  (when (and successp slite--last-command-p)
+  (let ((last-command-p slite--last-command-p))
+    (setq buffer-read-only slite--last-read-only-mode)
     (setq slite--last-command-p nil)
-    (call-interactively 'slite-run)))
+    (when (and successp last-command-p)
+      (call-interactively 'slite-run))))
 
 (defun slite-delete-test ()
   (interactive)
@@ -232,16 +254,24 @@
          (framework (plist-get id :framework))
          (name (plist-get id :test-name))
          (package (plist-get id :package)))
-   (slite--sl*-eval-async
-    `(slite/api::rem-test ,framework ,name ,package)
-    (lambda (x) (message "Test deleted")))))
+    (when (y-or-n-p (format "Delete the test %s in package %s?" name package))
+     (slite--sl*-eval-async
+      `(slite/api::rem-test ,framework ,name ,package)
+      (lambda (x) (message "Test deleted"))))))
 
 
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)
 
+(define-key slite-results-mode-map (kbd "<delete>")
+  'slite-delete-test)
+
 (define-key slite-results-mode-map (kbd "r") 'slite-rerun-in-debugger)
+(define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-test)
+
 (define-key slite-details-mode-map (kbd "r") 'slite-rerun-in-debugger)
+
+(define-key slite-results-mode-map (kbd "g")  'slite-rerun)
 
 
 (define-key slite-details-mode-map (kbd "q")
@@ -255,12 +285,26 @@
   'slite-run)
 
 
+
 (add-hook (cl-case (slite--slime-impl)
             (:sly
              'sly-compilation-finished-hook)
             (:slime
              'slime-compilation-finished-hook))
           'slite--compilation-finished)
+
+(defun slite-jump-to-test ()
+  (interactive)
+  (let* ((id (slite--current-id))
+         (name (plist-get id :test-name))
+         (package (plist-get id :package)))
+    (cl-ecase (slite--slime-impl)
+      (:slime
+       (let ((slime-buffer-package package))
+         (slime-edit-definition name)))
+      (:sly
+       (let ((sly-buffer-package package))
+         (sly-edit-definition name))))))
 
 (defun slite--slime-mode-map ()
   (cl-case (slite--slime-impl)
