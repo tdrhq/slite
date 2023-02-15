@@ -29,8 +29,9 @@
 ;;(unit:run-tests :tags 'bar)
 
 (def-fixture state ()
-  (let ((results (test-result-list (unit:run-tests :tags 'bar))))
-   (&body)))
+  (let ((*debugger-hook* nil))
+   (let ((results (test-result-list (unit:run-tests :tags 'bar))))
+     (&body))))
 
 (test preconditions
   (with-fixture state ()
