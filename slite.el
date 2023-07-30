@@ -16,6 +16,17 @@
 ;; jump to test definitions, rerun tests with debugger all from
 ;; inside Emacs.
 
+;; You might want to add some key bindings in various Lisp mode maps:
+;;
+;;     (define-key emacs-lisp-mode-map (kbd "C-c v") #'slite-run)
+;;     (define-key lisp-mode-map (kbd "C-c v") #'slite-run)
+;;     (define-key lisp-mode-map (kbd "C-c j")
+;;       #'slite-compile-defun-and-run-tests)
+;;     (with-eval-after-load 'slime
+;;       (define-key slime-mode-map (kbd "C-c v") #'slite-run))
+;;     (with-eval-after-load 'sly
+;;       (define-key sly-mode-map (kbd "C-c v") #'slite-run))
+
 ;;; Code:
 
 (require 'cl-lib)
@@ -295,11 +306,6 @@ this is incorrect, setq slite--last-command-p to nil"))
       `(slite/api::rem-test ,framework ,name ,package)
       (lambda (x) (message "Test deleted"))))))
 
-(define-key lisp-mode-map (kbd "C-c v")
-  'slite-run)
-(define-key lisp-mode-map (kbd "C-c j")
-  'slite-compile-defun-and-run-tests)
-
 (add-hook (cl-case (slite--slime-impl)
             (:sly
              'sly-compilation-finished-hook)
@@ -319,22 +325,6 @@ this is incorrect, setq slite--last-command-p to nil"))
       (:sly
        (let ((sly-buffer-package package))
          (sly-edit-definition name))))))
-
-(defun slite--slime-mode-map ()
-  (cl-case (slite--slime-impl)
-    (:slime
-     slime-mode-map)
-    (:sly
-     sly-mode-map)))
-
-(define-key (slite--slime-mode-map)
-  (kbd "C-c v")
-  'slite-run)
-
-;; helpful while building slite, because I have to switch back and
-;; forth between Lisp and elisp
-(define-key emacs-lisp-mode-map (kbd "C-c v")
-  'slite-run)
 
 (provide 'slite)
 ;;; sqlite.el ends here
