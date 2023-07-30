@@ -31,6 +31,16 @@
 
 (require 'cl-lib)
 
+(declare-function sly-compile-defun "sly")
+(declare-function sly-edit-definition "sly")
+(declare-function sly-eval-async "sly")
+(declare-function sly-mode "sly")
+
+(declare-function slime-compile-defun "slime")
+(declare-function slime-edit-definition "slime")
+(declare-function slime-eval-async "slime")
+(declare-function slime-mode "slime")
+
 (defvar slite-results-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
@@ -159,6 +169,8 @@
 
   (slite--run-expr cmd buffer))
 
+(defvar slite--last-expression nil)
+
 (defun slite--run-expr (cmd &optional buffer)
   (unless (bufferp buffer)
     (setq buffer (get-buffer-create "*Test Results*"))
@@ -221,6 +233,9 @@
         (slite--sl*-mode)
         (slite--set-buffer-package package)
         (switch-to-buffer-other-window buffer)))))
+
+(defvar-local slime-buffer-package nil)
+(defvar-local sly-buffer-package nil)
 
 (defun slite--set-buffer-package (package)
   (cl-ecase (slite--slime-impl)
@@ -288,7 +303,8 @@ this is incorrect, setq slite--last-command-p to nil"))
     (setq buffer-read-only t)
     (slite--sl*-compile-defun))))
 
-(defun slite--compilation-finished (successp notes buffer loadp)
+;; FIXME Should _these arguments really be disregarded?
+(defun slite--compilation-finished (successp _notes _buffer _loadp)
   (let ((last-command-p slite--last-command-p))
     (setq buffer-read-only slite--last-read-only-mode)
     (setq slite--last-command-p nil)
@@ -304,7 +320,7 @@ this is incorrect, setq slite--last-command-p to nil"))
     (when (y-or-n-p (format "Delete the test %s in package %s?" name package))
      (slite--sl*-eval-async
       `(slite/api::rem-test ,framework ,name ,package)
-      (lambda (x) (message "Test deleted"))))))
+      (lambda (_) (message "Test deleted"))))))
 
 (add-hook (cl-case (slite--slime-impl)
             (:sly
