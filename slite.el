@@ -1,7 +1,5 @@
 ;; -*- lexical-binding: t -*-
 
-(provide 'slite)
-
 (require 'cl-lib)
 
 (define-derived-mode slite-results-mode tabulated-list-mode
@@ -321,3 +319,5 @@
 ;; forth between Lisp and elisp
 (define-key emacs-lisp-mode-map (kbd "C-c v")
   'slite-run)
+
+(provide 'slite)
