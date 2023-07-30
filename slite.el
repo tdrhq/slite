@@ -74,7 +74,6 @@
    "^Unexpected Error: " ""
    (replace-regexp-in-string "\n" "" s )))
 
-
 (cl-defun slite--parse-reason (id)
   (or
    (let ((results (plist-get id :results)))
@@ -275,7 +274,6 @@
       `(slite/api::rem-test ,framework ,name ,package)
       (lambda (x) (message "Test deleted"))))))
 
-
 (define-key slite-results-mode-map (kbd "RET")
   'slite-describe-result)
 
@@ -289,7 +287,6 @@
 
 (define-key slite-results-mode-map (kbd "g")  'slite-rerun)
 
-
 (define-key slite-details-mode-map (kbd "q")
   'slite-details-quit)
 
@@ -299,8 +296,6 @@
   'slite-compile-defun-and-run-tests)
 (define-key slite-results-mode-map (kbd "C-c v")
   'slite-run)
-
-
 
 (add-hook (cl-case (slite--slime-impl)
             (:sly
