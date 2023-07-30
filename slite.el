@@ -136,14 +136,15 @@
     (with-current-buffer buffer
       (setq slite--last-expression cmd)))
   (message "Waiting for test results...")
-  (slite--sl*-eval-async `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
-                         (lambda (results)
-                           (when (and
-                                  slite-success-hook
-                                  (slite--all-tests-passed-p results))
-                             (funcall slite-success-hook))
+  (slite--sl*-eval-async
+   `(slite::process-results (cl::eval (cl::read-from-string ,cmd)))
+   (lambda (results)
+     (when (and
+            slite-success-hook
+            (slite--all-tests-passed-p results))
+       (funcall slite-success-hook))
 
-                           (slite--show-test-results results buffer))))
+     (slite--show-test-results results buffer))))
 
 (defun slite-rerun ()
   (interactive)
@@ -234,7 +235,8 @@
          (framework (plist-get id :framework))
          (name (plist-get id :test-name))
          (package (plist-get id :package)))
-    (slite--sl*-eval-async `(slite/api::rerun-in-debugger ,framework ,name ,package)
+    (slite--sl*-eval-async
+     `(slite/api::rerun-in-debugger ,framework ,name ,package)
       (lambda (x)
         (message "Result of running %s: %s" name x)))))
 
@@ -249,7 +251,8 @@
   (interactive)
   (cond
    (slite--last-command-p
-    (message "A compile-defun-and-run-tests is still running (if this is incorrect, setq slite--last-command-p to nil"))
+    (message "A compile-defun-and-run-tests is still running (if \
+this is incorrect, setq slite--last-command-p to nil"))
    (t
     (setq slite--last-command-p t)
     (setq slite--last-read-only-mode buffer-read-only)
