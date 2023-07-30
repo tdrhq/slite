@@ -20,6 +20,18 @@
 
 (require 'cl-lib)
 
+(defvar slite-results-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map tabulated-list-mode-map)
+    (define-key map (kbd "RET")      #'slite-describe-result)
+    (define-key map (kbd "<delete>") #'slite-delete-test)
+    (define-key map (kbd "r")        #'slite-rerun-in-debugger)
+    (define-key map (kbd "M-.")      #'slite-jump-to-test)
+    (define-key map (kbd "g")        #'slite-rerun)
+    (define-key map (kbd "C-c v")    #'slite-run)
+    map)
+  "Keymap for `slite-results-mode'.")
+
 (define-derived-mode slite-results-mode tabulated-list-mode
   "CL Test Results"
   "dfdfd"
@@ -32,6 +44,12 @@
 (defvar slite-success-shell-hook nil)
 
 (defvar slite-success-hook 'slite--on-success)
+
+(defvar slite-details-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "r") #'slite-rerun-in-debugger)
+    (define-key map (kbd "q") #'slite-details-quit)
+    map))
 
 (define-derived-mode slite-details-mode fundamental-mode
   "Test Results Details"
@@ -277,28 +295,10 @@ this is incorrect, setq slite--last-command-p to nil"))
       `(slite/api::rem-test ,framework ,name ,package)
       (lambda (x) (message "Test deleted"))))))
 
-(define-key slite-results-mode-map (kbd "RET")
-  'slite-describe-result)
-
-(define-key slite-results-mode-map (kbd "<delete>")
-  'slite-delete-test)
-
-(define-key slite-results-mode-map (kbd "r") 'slite-rerun-in-debugger)
-(define-key slite-results-mode-map (kbd "M-.") 'slite-jump-to-test)
-
-(define-key slite-details-mode-map (kbd "r") 'slite-rerun-in-debugger)
-
-(define-key slite-results-mode-map (kbd "g")  'slite-rerun)
-
-(define-key slite-details-mode-map (kbd "q")
-  'slite-details-quit)
-
 (define-key lisp-mode-map (kbd "C-c v")
   'slite-run)
 (define-key lisp-mode-map (kbd "C-c j")
   'slite-compile-defun-and-run-tests)
-(define-key slite-results-mode-map (kbd "C-c v")
-  'slite-run)
 
 (add-hook (cl-case (slite--slime-impl)
             (:sly
