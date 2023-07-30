@@ -1,4 +1,22 @@
-;; -*- lexical-binding: t -*-
+;;; slite.el --- Interactively runs your Common Lisp tests  -*- lexical-binding: t -*-
+
+;; Copyright (C) 2021-2023 Arnold Noronha
+
+;; Author: Arnold Noronha <arnold@tdrhq.com>
+;; Homepage: https://github.com/tdrhq/slite
+;; Keywords: lisp tools
+;; Package-Requires: ((emacs "25.1"))
+;; SPDX-License-Identifier: Apache-2.0
+
+;;; Commentary:
+
+;; Slite stands for SLIme TEst runner. Slite interactively runs
+;; your Common Lisp tests (currently only FiveAM and Parachute are
+;; supported).  It allows you to see the summary of test failures,
+;; jump to test definitions, rerun tests with debugger all from
+;; inside Emacs.
+
+;;; Code:
 
 (require 'cl-lib)
 
@@ -321,3 +339,4 @@
   'slite-run)
 
 (provide 'slite)
+;;; sqlite.el ends here
