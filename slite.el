@@ -10,7 +10,7 @@
 
 ;;; Commentary:
 
-;; Slite stands for SLIme TEst runner. Slite interactively runs
+;; Slite stands for SLIme TEst runner.  Slite interactively runs
 ;; your Common Lisp tests (currently only FiveAM and Parachute are
 ;; supported).  It allows you to see the summary of test failures,
 ;; jump to test definitions, rerun tests with debugger all from
@@ -55,7 +55,7 @@
 
 (define-derived-mode slite-results-mode tabulated-list-mode
   "CL Test Results"
-  "dfdfd"
+  "A tabulated mode to show results from your last Slite run."
   (setq tabulated-list-format
         [("Result" 5 t)
          ("Name" 30 t)
@@ -74,13 +74,14 @@
 
 (define-derived-mode slite-details-mode fundamental-mode
   "Test Results Details"
-  "dfdfd"
+  "A mode to show details for a specific test case from a Slite run."
   (read-only-mode))
 
 (defvar slite-slime-impl nil
-  "either :slime or :sly. Keep as nil to auto-detect.")
+  "Either :slime or :sly.  Keep as nil to auto-detect.")
 
 (defun slite--slime-impl ()
+  "Return :sly or :slime depending on which one we're running against."
   (cond
    (slite-slime-impl
     slite-slime-impl)
@@ -92,14 +93,17 @@
     (error "Neither SLIME or SLY could be autodetected"))))
 
 (defun slite--pass ()
+  "The constant PASS with font-face."
   #("PASS" 0 4 (face  (:foreground "green"))))
 
 (defun slite--fail ()
+  "The constant FAIL with font-face."
   #("FAIL" 0 4 (face (:background  "red"
                                    :foreground  "white"
                                    :weight bold))))
 
 (defun slite--format-pass-fail (msg)
+  "Parse the MSG to determine how to render it."
   (cond
    ((equal msg "PASS")
     (slite--pass))
@@ -108,12 +112,14 @@
    (t msg)))
 
 (defun slite--format-one-line-reason (s)
+  "Format S as a one line string."
   (replace-regexp-in-string
    ;; This is common enough and takes up too much screen real estate
    "^Unexpected Error: " ""
    (replace-regexp-in-string "\n" "" s )))
 
 (cl-defun slite--parse-reason (id)
+  "Parse the reason for the failure from ID."
   (or
    (let ((results (plist-get id :results)))
      (cl-block inner
@@ -124,6 +130,7 @@
    ""))
 
 (defun slite--show-test-results (results buffer)
+  "Show the test results from RESULTS in BUFFER."
   (message "Got test results")
   (with-current-buffer buffer
     (slite-results-mode)
@@ -147,6 +154,7 @@
     ))
 
 (defun slite--all-tests-passed-p (results)
+  "Check if all the tests in RESULTS are passing."
   (cl-every (lambda (x)
            (equal "PASS"
                   (car (plist-get x :data))))
@@ -155,6 +163,7 @@
 (defvar slite-history nil)
 
 (defun slite--sl*-read-from-minibuffer (&rest args)
+  "Call either {slime|sly}-from-minibuffer with the ARGS."
   (apply
    (cl-ecase (slite--slime-impl)
      (:slime 'slime-read-from-minibuffer)
@@ -162,6 +171,7 @@
    args))
 
 (defun slite-run (cmd &optional buffer)
+  "Interactively run CL tests using the expression CMD and output the results into BUFFER."
   (interactive
    (list (slite--sl*-read-from-minibuffer "Lisp expression for tests: "
                                           (car slite-history)
@@ -172,6 +182,7 @@
 (defvar slite--last-expression nil)
 
 (defun slite--run-expr (cmd &optional buffer)
+  "Non-interactive version of slite-run."
   (unless (bufferp buffer)
     (setq buffer (get-buffer-create "*Test Results*"))
     (with-current-buffer buffer
@@ -188,10 +199,12 @@
      (slite--show-test-results results buffer))))
 
 (defun slite-rerun ()
+  "Re-run the last expression."
   (interactive)
   (slite--run-expr slite--last-expression))
 
 (defun slite--on-success ()
+  "Callback when tests have run successfully."
   (when slite-success-shell-hook
     (save-some-buffers t compilation-save-buffers-predicate)
     (message "running hook: %s" slite-success-shell-hook)
@@ -200,6 +213,7 @@
 (make-local-variable 'slite--current-id)
 
 (defun slite-describe-result ()
+  "Describe the results at point into a buffer."
   (interactive)
   (let ((buffer (generate-new-buffer "*Test Case Details*")))
 
@@ -238,6 +252,7 @@
 (defvar-local sly-buffer-package nil)
 
 (defun slite--set-buffer-package (package)
+  "Wrapper for {sly|slime}-set-buffer-package."
   (cl-ecase (slite--slime-impl)
     (:slime
      (setq slime-buffer-package package))
@@ -245,6 +260,7 @@
      (setq sly-buffer-package package))))
 
 (defun slite--sl*-mode ()
+  "Wrappe for {sly|slime}-mode."
   (cl-ecase (slite--slime-impl)
     (:slime
      (slime-mode))
@@ -252,14 +268,20 @@
      (sly-mode))))
 
 (defun slite-details-quit ()
+  "Simply quits the slite window."
   (interactive)
   (quit-window t))
 
 (defun slite--current-id ()
+  "Get the ID of the test we're looking at.
+
+This might either be in the test details view, or in the test
+tabulated list."
   (or (tabulated-list-get-id)
       slite--current-id))
 
 (defun slite--sl*-eval-async (expn callback)
+  "Wrapper for {sly|slime}-eval-async."
   (cl-ecase (slite--slime-impl)
     (:slime
      (slime-eval-async expn callback))
@@ -267,6 +289,7 @@
      (sly-eval-async expn callback))))
 
 (defun slite--sl*-compile-defun ()
+  "Wrapper for {sly|slime}-compile-defun."
   (cl-ecase (slite--slime-impl)
     (:slime
      (slime-compile-defun))
@@ -274,6 +297,7 @@
      (sly-compile-defun 1))))
 
 (defun slite-rerun-in-debugger ()
+  "Re-run the test at point in a debugger."
   (interactive)
   (let* ((id (slite--current-id))
          (framework (plist-get id :framework))
@@ -285,13 +309,15 @@
         (message "Result of running %s: %s" name x)))))
 
 (defvar-local slite--buffer-expression nil
-  "The command used to generate the tests in this buffer, we'll
-  use this for slite-rerun")
+  "The command used to generate the tests in this buffer.
+
+We'll use this for slite-rerun.")
 
 (defvar slite--last-command-p nil)
 (defvar slite--last-read-only-mode nil)
 
 (defun slite-compile-defun-and-run-tests ()
+  "Compile the current expression and run tests if the compilation passes."
   (interactive)
   (cond
    (slite--last-command-p
@@ -305,6 +331,7 @@ this is incorrect, setq slite--last-command-p to nil"))
 
 ;; FIXME Should _these arguments really be disregarded?
 (defun slite--compilation-finished (successp _notes _buffer _loadp)
+  "Callback for a CL compilation."
   (let ((last-command-p slite--last-command-p))
     (setq buffer-read-only slite--last-read-only-mode)
     (setq slite--last-command-p nil)
@@ -312,6 +339,7 @@ this is incorrect, setq slite--last-command-p to nil"))
       (call-interactively 'slite-run))))
 
 (defun slite-delete-test ()
+  "Delete the test at point."
   (interactive)
   (let* ((id (slite--current-id))
          (framework (plist-get id :framework))
@@ -330,6 +358,10 @@ this is incorrect, setq slite--last-command-p to nil"))
           'slite--compilation-finished)
 
 (defun slite-jump-to-test ()
+  "Jump to the test at point.
+
+Currently only supported on Lispworks, and requires a patched
+version of FiveAM.  Please see README."
   (interactive)
   (let* ((id (slite--current-id))
          (name (plist-get id :test-name))
@@ -343,4 +375,4 @@ this is incorrect, setq slite--last-command-p to nil"))
          (sly-edit-definition name))))))
 
 (provide 'slite)
-;;; sqlite.el ends here
+;;; slite.el ends here
