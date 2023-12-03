@@ -374,5 +374,16 @@ version of FiveAM.  Please see README."
        (let ((sly-buffer-package package))
          (sly-edit-definition name))))))
 
+(defun slite--define-keybindings ()
+  "Define a set of default keybindings to be used with slite."
+  (define-key emacs-lisp-mode-map (kbd "C-c v") #'slite-run)
+  (define-key lisp-mode-map (kbd "C-c v") #'slite-run)
+  (define-key lisp-mode-map (kbd "C-c j")
+    #'slite-compile-defun-and-run-tests)
+  (with-eval-after-load 'slime
+    (define-key slime-mode-map (kbd "C-c v") #'slite-run))
+  (with-eval-after-load 'sly
+    (define-key sly-mode-map (kbd "C-c v") #'slite-run)))
+
 (provide 'slite)
 ;;; slite.el ends here
