@@ -75,4 +75,4 @@ work. Jumping to test is currently not surpported.
 
 # Authors
 
-Built by Arnold Noronha <arnold@tdrhq.com>
+Built by Arnold Noronha <arnold@screenshotbot.io> of [Screenshotbot](https://screenshotbot.io).
