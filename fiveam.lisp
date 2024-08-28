@@ -28,7 +28,10 @@
   ;; To keep the expression concise, let's switch to the package
   ;; before rendering it to a string
   (let ((*package* (test-case-package (test-case result))))
-   (format nil "~s" (fiveam::test-expr result))))
+    (handler-case
+        (format nil "~s" (fiveam::test-expr result))
+      (unbound-slot ()
+        "Test Expression unavailable"))))
 
 (defmethod test-message ((result fiveam::test-result))
   (fiveam::reason result))
