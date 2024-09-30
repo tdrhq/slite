@@ -43,7 +43,7 @@
   (symbol-package (test-name test-case)))
 
 
-(defmethod slite/api:rem-test ((framwork (eql :fiveam)) name package)
+(defmethod slite/api:rem-test ((framework (eql :fiveam)) name package)
   (declare (ignore framework))
   (cond
     (package
