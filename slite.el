@@ -280,6 +280,22 @@ tabulated list."
   (or (tabulated-list-get-id)
       slite--current-id))
 
+(defun slite--get-sly-symbol (name)
+  (cl-ecase (slite--slime-impl)
+    (:slime
+     (intern (format "slime-%s"  name)))
+    (:sly
+     (intern (format "sly-%s" name)))))
+
+(defun slite--funcall-sly (name &rest args)
+  (apply
+   (slite--get-sly-symbol name)
+   args))
+
+(defun slite--sly-symbol-value (name)
+  (symbol-value
+   (slite--get-sly-symbol name)))
+
 (defun slite--sl*-eval-async (expn callback)
   "Wrapper for {sly|slime}-eval-async."
   (cl-ecase (slite--slime-impl)
@@ -329,14 +345,21 @@ this is incorrect, setq slite--last-command-p to nil"))
     (setq buffer-read-only t)
     (slite--sl*-compile-defun))))
 
-;; FIXME Should _these arguments really be disregarded?
-(defun slite--compilation-finished (successp _notes _buffer _loadp)
+;; In SLY, we are passed four arguments `succesp notes buffer
+;; loadp`. In Slime, we are passed only notes. In both cases a
+;; {slime|sly}-last-compilation-result variable is set, so we'll use
+;; that instead to get the result.
+(defun slite--compilation-finished (&rest args)
   "Callback for a CL compilation."
   (let ((last-command-p slite--last-command-p))
     (setq buffer-read-only slite--last-read-only-mode)
     (setq slite--last-command-p nil)
-    (when (and successp last-command-p)
-      (call-interactively 'slite-run))))
+    (let ((successp
+           (slite--funcall-sly 'compilation-result.successp
+                               (slite--sly-symbol-value
+                                'last-compilation-result))))
+      (when (and successp last-command-p)
+        (call-interactively 'slite-run)))))
 
 (defun slite-delete-test ()
   "Delete the test at point."
