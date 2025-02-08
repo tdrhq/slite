@@ -170,14 +170,26 @@
      (:sly 'sly-read-from-minibuffer))
    args))
 
+;; I don't know of a better way to "override" the default value 
+(defvar slite-test-expression nil)
+
 (defun slite-run (cmd &optional buffer)
   "Interactively run CL tests using the expression CMD and output the results into BUFFER."
   (interactive
    (list (slite--sl*-read-from-minibuffer "Lisp expression for tests: "
-                                          (car slite-history)
+                                          (or
+                                           slite-test-expression
+                                           (car slite-history))
                                           'slite-history)))
 
   (slite--run-expr cmd buffer))
+
+(defun slite-run-expression (expr)
+  "Run a specific expression interactively. The expression that
+will be executed will default to the provided expression."
+  (interactive)
+  (let ((slite-test-expression expr))
+   (call-interactively 'slite-run)))
 
 (defvar slite--last-expression nil)
 
