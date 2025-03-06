@@ -129,9 +129,16 @@
             (cl-return-from inner(slite--format-one-line-reason reason)))))))
    ""))
 
+(defun slite--get-message-from-results (results)
+  (or
+   (cl-loop for x in results
+            if (equal "FAIL" (car (plist-get x :data)))
+            return (format "Failed: %s" (slite--parse-reason (plist-get x :id))))
+   "Passed"))
+
 (defun slite--show-test-results (results buffer)
   "Show the test results from RESULTS in BUFFER."
-  (message "Got test results")
+  (message "%s" (slite--get-message-from-results results))
   (with-current-buffer buffer
     (slite-results-mode)
     (setq tabulated-list-entries
