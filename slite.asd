@@ -25,6 +25,12 @@
                :lisp-unit2)
   :components ((:file "lisp-unit2")))
 
+(defsystem :slite/lispworks
+  :serial t
+  :description "A LispWorks/CAPI client for slite that runs tests in-process."
+  :depends-on (:slite)
+  :components ((:file "lispworks")))
+
 (defsystem :slite/tests
   :serial t
   :depends-on (:slite
