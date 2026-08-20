@@ -5,6 +5,8 @@
                 #:rerun-in-debugger)
   (:export #:run-tests
            #:display-test-results
+           #:run-test-expression
+           #:enable-editor-bindings
            #:results-window))
 (in-package :slite/lispworks)
 
@@ -236,3 +238,79 @@ results in a new CAPI window."
   (fiveam:run :my-suite)) and display the results in a CAPI window. BODY
   is re-evaluated when the user chooses \"Rerun All\"."
   `(display-test-results (lambda () ,@body)))
+
+;; * LispWorks editor integration
+;;
+;; This is the equivalent of the Emacs client's C-c v / C-c j bindings,
+;; but for the LispWorks editor. C-c v prompts for a test expression and
+;; runs it; C-c j compiles the current top-level form first and then does
+;; the same.
+
+(defvar *last-test-expression* nil
+  "The last expression run by the \"Slite Run\" editor command. Used as
+the default the next time the command prompts.")
+
+(defun run-test-expression (expression &key (package *package*))
+  "Read and evaluate EXPRESSION (a string) in PACKAGE, treat its value as
+raw test results, and display them in a CAPI results window. The tests
+run in a separate process so the editor stays responsive, and the
+expression is remembered for \"Rerun All\" and the next prompt."
+  (setf *last-test-expression* expression)
+  (let ((package (or (find-package package) *package*)))
+    (mp:process-run-function
+     "slite-run-tests" '()
+     (lambda ()
+       (display-test-results
+        (lambda ()
+          (let ((*package* package))
+            (eval (read-from-string expression))))
+        :title (format nil "CL Test Results: ~a" expression))))))
+
+(defun current-editor-package ()
+  "The package to read/eval in for the current editor buffer, defaulting
+to *PACKAGE* if it can't be determined."
+  (or (ignore-errors
+        (let ((name (editor::buffer-package-to-use (editor:current-point))))
+          (and name (find-package name))))
+      *package*))
+
+(defun blankp (string)
+  (or (null string)
+      (zerop (length (string-trim '(#\Space #\Tab #\Newline) string)))))
+
+(defun %slite-run (p)
+  "Prompt for a test expression (defaulting to the last one) and run it."
+  (declare (ignore p))
+  (let ((package (current-editor-package))
+        (expression (editor:prompt-for-string
+                     :prompt "Lisp expression for tests: "
+                     :default-string (or *last-test-expression* "")
+                     :help "A form that returns test results, e.g. (fiveam:run :my-suite)")))
+    (unless (blankp expression)
+      (editor:message "Running tests: ~a" expression)
+      (run-test-expression expression :package package))))
+
+(editor:defcommand "Slite Run" (p)
+     "Prompt for a Lisp expression that returns test results, evaluate it,
+and show the results in a CAPI window."
+     "Prompt for a Lisp expression and run it as tests."
+  (%slite-run p))
+
+(editor:defcommand "Slite Compile Defun And Run" (p)
+     "Compile the current top-level form, then prompt for a test
+expression and run it (like Slite Run)."
+     "Compile the current defun and then run tests."
+  (editor:compile-defun-command p)
+  (%slite-run p))
+
+(defun enable-editor-bindings ()
+  "Bind C-c v to \"Slite Run\" and C-c j to \"Slite Compile Defun And
+Run\" in the LispWorks editor, mirroring the Emacs client. Called
+automatically when this system is loaded."
+  (editor:bind-key "Slite Run" #("Control-c" "v"))
+  (editor:bind-key "Slite Compile Defun And Run" #("Control-c" "j")))
+
+(handler-case
+    (enable-editor-bindings)
+  (error (e)
+    (warn "slite/lispworks: couldn't install editor key bindings: ~a" e)))
