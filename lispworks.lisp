@@ -87,6 +87,9 @@ test results (e.g. from FIVEAM:RUN). Used to rerun all tests."))
                 ("Rerun All" :callback 'rerun-all-callback
                              :callback-type :interface
                              :accelerator "g")
+                ("Jump to Test" :callback 'jump-to-test-callback
+                                :callback-type :interface
+                                :accelerator "j")
                 ("Delete Test" :callback 'delete-test-callback
                                :callback-type :interface
                                :accelerator "Delete"))))
@@ -124,6 +127,41 @@ test results (e.g. from FIVEAM:RUN). Used to rerun all tests."))
              (name (getf id :test-name))
              (package (getf id :package)))
         (rerun-in-debugger framework name package)))))
+
+(defun test-symbol (item)
+  "The interned symbol naming ITEM's test, or NIL for an uninterned test."
+  (let* ((id (item-id item))
+         (name (getf id :test-name))
+         (package-name (getf id :package))
+         (package (and package-name (find-package package-name))))
+    (and package (find-symbol name package))))
+
+(defun jump-to-test-callback (interface)
+  "Open the LispWorks editor at the definition of the selected test.
+
+This relies on the test framework registering a LispWorks dspec for each
+test (as our custom FiveAM does): CL:ED resolves the definition through
+the same dspec source locations that the editor's Find Source (M-.) uses."
+  (let ((item (selected-item interface)))
+    (when item
+      (let ((symbol (test-symbol item)))
+        (cond
+          ((null symbol)
+           (capi:display-message
+            "Can't jump: the test ~a has no interned symbol in package ~a."
+            (getf (item-id item) :test-name)
+            (getf (item-id item) :package)))
+          ((null (dspec:find-name-locations dspec:*dspec-classes* symbol))
+           (capi:display-message
+            "Can't jump: no source location is recorded for ~s. Make sure ~
+             the test framework registers a LispWorks dspec for each test."
+            symbol))
+          (t
+           (handler-case
+               (ed symbol)
+             (error (e)
+               (capi:display-message "Couldn't open the editor for ~s: ~a"
+                                     symbol e)))))))))
 
 (defun delete-test-callback (interface)
   (let ((item (selected-item interface)))
